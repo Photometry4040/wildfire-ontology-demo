@@ -1,0 +1,1566 @@
+[
+  {
+    "source_id": "SOURCE_ADMIN_BOUNDARIES",
+    "name": "광주·전남 행정구역 경계",
+    "domain": "reference_region",
+    "decision_relevance": "모든 공간 조인과 광주·전남 범위 필터의 기준",
+    "availability_status": "REAL",
+    "verification_status": "coverage_verified",
+    "source_owner": "국토교통부 국토지리정보원",
+    "source_url": "https://www.data.go.kr/data/15123128/fileData.do",
+    "acquisition_method": "file_download",
+    "auth_required": "none",
+    "expected_format": "CSV",
+    "storage_path": "data/raw/SOURCE_ADMIN_BOUNDARIES/snapshots/",
+    "value_nature": "geospatial_base_layer",
+    "temporal_semantics": [
+      "registry_updated_at",
+      "static"
+    ],
+    "temporal_resolution": "source metadata registry update; static boundary reference",
+    "spatial_semantics": [
+      "polygon",
+      "admin_area"
+    ],
+    "spatial_resolution": "법정 읍면동 WKB geometry in CSV",
+    "freshness_class": "static",
+    "confidence_class": "official_primary",
+    "raw_fields": [
+      "공간정보일렬번호",
+      "읍면동코드",
+      "읍면동명",
+      "객체시군구코드",
+      "오브젝트아이디",
+      "공간정보"
+    ],
+    "derived_outputs": [
+      "DERIVED_PROJECT_AOI",
+      "DERIVED_WEATHER_GRID_TO_REGION"
+    ],
+    "used_by_features": [
+      "전체 공간 조인",
+      "PreWateringSegment 후보 생성"
+    ],
+    "exclusion_or_mock_reason": "",
+    "access_option_ids": [
+      "ACCESS_ADMIN_BOUNDARIES_ADMIN_CODE"
+    ],
+    "candidate_access_option_ids": [],
+    "selected_access_option_id": "ACCESS_ADMIN_BOUNDARIES_ADMIN_CODE",
+    "fallback_access_option_ids": []
+  },
+  {
+    "source_id": "SOURCE_REGION_CODE_TABLE",
+    "name": "법정동/행정구역 코드표",
+    "domain": "reference_region",
+    "decision_relevance": "행정구역명, 법정동코드, 시군구코드, 행정동코드, 행정기관-법정동 관할 매핑",
+    "availability_status": "REAL",
+    "verification_status": "coverage_verified",
+    "source_owner": "국토교통부; 국가데이터처; 행정안전부",
+    "source_url": "https://www.data.go.kr/data/15063424/fileData.do; https://www.mois.go.kr/frt/bbs/type001/commonSelectBoardArticle.do?bbsId=BBSMSTR_000000000052&nttId=124721",
+    "acquisition_method": "file_download",
+    "auth_required": "none",
+    "expected_format": "CSV, fixed-width text",
+    "storage_path": "data/raw/SOURCE_REGION_CODE_TABLE/snapshots/",
+    "value_nature": "static_reference",
+    "temporal_semantics": [
+      "registry_updated_at"
+    ],
+    "temporal_resolution": "annual or irregular registry update",
+    "spatial_semantics": [
+      "no_geometry",
+      "admin_area"
+    ],
+    "spatial_resolution": "법정동/행정동 코드; 행정기관-관할 법정동 매핑",
+    "freshness_class": "static",
+    "confidence_class": "official_primary",
+    "raw_fields": [
+      "법정동코드",
+      "시도명",
+      "시군구명",
+      "읍면동명",
+      "리명",
+      "순위",
+      "생성일자",
+      "삭제일자",
+      "과거법정동코드",
+      "행정동번호",
+      "개정일자",
+      "연결번호",
+      "행정동코드",
+      "행정동명",
+      "배경여부",
+      "최상위행정동코드",
+      "부모행정동코드",
+      "순번",
+      "동리명",
+      "말소일자"
+    ],
+    "derived_outputs": [
+      "region_code_mapping"
+    ],
+    "used_by_features": [
+      "FireRiskLevelFeature"
+    ],
+    "exclusion_or_mock_reason": "",
+    "access_option_ids": [
+      "ACCESS_REGION_CODE_TABLE_ADMIN_CODE",
+      "ACCESS_REGION_CODE_TABLE_KOSTAT_ADMIN_DONG",
+      "ACCESS_REGION_CODE_TABLE_MOIS_ADMIN_LEGAL_MAPPING"
+    ],
+    "candidate_access_option_ids": [],
+    "selected_access_option_id": "ACCESS_REGION_CODE_TABLE_ADMIN_CODE",
+    "fallback_access_option_ids": [
+      "ACCESS_REGION_CODE_TABLE_KOSTAT_ADMIN_DONG",
+      "ACCESS_REGION_CODE_TABLE_MOIS_ADMIN_LEGAL_MAPPING"
+    ]
+  },
+  {
+    "source_id": "SOURCE_OFFICIAL_FIRE_RISK_FORECAST",
+    "name": "산불위험예보정보",
+    "domain": "official_fire_risk",
+    "decision_relevance": "공식 산불위험지수와 위험등급의 핵심 원천",
+    "availability_status": "REAL",
+    "verification_status": "coverage_verified",
+    "source_owner": "산림청 국립산림과학원",
+    "source_url": "https://www.data.go.kr/data/15084817/openapi.do",
+    "acquisition_method": "openapi",
+    "auth_required": "public_api_key",
+    "expected_format": "JSON, XML",
+    "storage_path": "data/raw/SOURCE_OFFICIAL_FIRE_RISK_FORECAST/snapshots/",
+    "value_nature": "official_model_output",
+    "temporal_semantics": [
+      "forecast_issued_at",
+      "forecast_valid_time"
+    ],
+    "temporal_resolution": "3-hour provider production cadence stated; endpoint exposes current/data-basis time only",
+    "spatial_semantics": [
+      "admin_area"
+    ],
+    "spatial_resolution": "시군구",
+    "freshness_class": "near_real_time",
+    "confidence_class": "official_primary",
+    "raw_fields": [
+      "analdate",
+      "area",
+      "d1",
+      "d2",
+      "d3",
+      "d4",
+      "doname",
+      "maxi",
+      "meanavg",
+      "mini",
+      "regioncode",
+      "sigucode",
+      "sigun",
+      "std",
+      "upplocalcd"
+    ],
+    "derived_outputs": [
+      "DERIVED_FIRE_RISK_TIMESERIES",
+      "FireRiskIndex",
+      "FireRiskState"
+    ],
+    "used_by_features": [
+      "FireRiskLevelFeature",
+      "FireRiskTrendFeature",
+      "HighRiskTimeWindowFeature"
+    ],
+    "exclusion_or_mock_reason": "",
+    "access_option_ids": [
+      "ACCESS_OFFICIAL_FIRE_RISK_FORECAST_EUPMYEONDONG",
+      "ACCESS_OFFICIAL_FIRE_RISK_FORECAST_SIGUNGU",
+      "ACCESS_OFFICIAL_FIRE_RISK_FORECAST_IMAGE_OR_GRID",
+      "ACCESS_OFFICIAL_FIRE_RISK_FORECAST_NIFOS_DETAIL_ADM_JSON"
+    ],
+    "candidate_access_option_ids": [
+      "ACCESS_OFFICIAL_FIRE_RISK_FORECAST_NIFOS_DETAIL_ADM_JSON"
+    ],
+    "selected_access_option_id": "ACCESS_OFFICIAL_FIRE_RISK_FORECAST_SIGUNGU",
+    "fallback_access_option_ids": []
+  },
+  {
+    "source_id": "SOURCE_LARGE_FIRE_RISK_FORECAST",
+    "name": "대형산불위험예보목록",
+    "domain": "official_fire_risk",
+    "decision_relevance": "대형산불주의보/경보, 실효습도, 풍속의 공식 보조 원천",
+    "availability_status": "REAL",
+    "verification_status": "key_validated",
+    "source_owner": "산림청 국립산림과학원",
+    "source_url": "https://www.data.go.kr/data/15092027/fileData.do",
+    "acquisition_method": "file_download",
+    "auth_required": "public_api_key",
+    "expected_format": "CSV",
+    "storage_path": "data/raw/SOURCE_LARGE_FIRE_RISK_FORECAST/snapshots/",
+    "value_nature": "official_model_output",
+    "temporal_semantics": [
+      "forecast_valid_time",
+      "event_occurred_at"
+    ],
+    "temporal_resolution": "hourly/event row time; monthly file publication",
+    "spatial_semantics": [
+      "polygon",
+      "admin_area"
+    ],
+    "spatial_resolution": "읍면동명",
+    "freshness_class": "monthly",
+    "confidence_class": "official_primary",
+    "raw_fields": [
+      "예보일시",
+      "시도명",
+      "시군구명",
+      "읍면동명",
+      "실효습도",
+      "풍속",
+      "등급"
+    ],
+    "derived_outputs": [
+      "DERIVED_LARGE_FIRE_TRIGGER",
+      "LargeFireRiskState"
+    ],
+    "used_by_features": [
+      "LargeFireRiskAlertFeature"
+    ],
+    "exclusion_or_mock_reason": "",
+    "access_option_ids": [
+      "ACCESS_LARGE_FIRE_RISK_FORECAST_EUPMYEONDONG",
+      "ACCESS_LARGE_FIRE_RISK_FORECAST_NIFOS_CURRENT_JSON"
+    ],
+    "candidate_access_option_ids": [
+      "ACCESS_LARGE_FIRE_RISK_FORECAST_NIFOS_CURRENT_JSON"
+    ],
+    "selected_access_option_id": "ACCESS_LARGE_FIRE_RISK_FORECAST_EUPMYEONDONG",
+    "fallback_access_option_ids": []
+  },
+  {
+    "source_id": "SOURCE_KMA_SHORT_TERM_FORECAST",
+    "name": "기상청 단기예보",
+    "domain": "weather",
+    "decision_relevance": "기온, 상대습도, 풍속, 풍향, 강수예보의 기본 원천",
+    "availability_status": "REAL",
+    "verification_status": "api_tested",
+    "source_owner": "기상청",
+    "source_url": "https://www.data.go.kr/data/15084084/openapi.do",
+    "acquisition_method": "openapi",
+    "auth_required": "public_api_key",
+    "expected_format": "JSON, XML",
+    "storage_path": "data/raw/SOURCE_KMA_SHORT_TERM_FORECAST/snapshots/",
+    "value_nature": "forecast",
+    "temporal_semantics": [
+      "forecast_issued_at",
+      "forecast_valid_time"
+    ],
+    "temporal_resolution": "8 issuances/day, hourly forecast",
+    "spatial_semantics": [
+      "grid"
+    ],
+    "spatial_resolution": "5km nx/ny grid",
+    "freshness_class": "near_real_time",
+    "confidence_class": "modeled",
+    "raw_fields": [
+      "풍향",
+      "풍속",
+      "시간대별 풍향 예보",
+      "시간대별 풍속 예보",
+      "시간대별 기온 예보",
+      "시간대별 습도 예보",
+      "예상 강수량",
+      "강수 시작 시각",
+      "강수 확률",
+      "강수 지속 시간"
+    ],
+    "derived_outputs": [
+      "DERIVED_WEATHER_GRID_TO_REGION",
+      "DERIVED_WIND_VECTOR_CHANGE",
+      "DERIVED_WORK_WINDOW"
+    ],
+    "used_by_features": [
+      "HighRiskTimeWindowFeature",
+      "RainOffsetFeature",
+      "WindTowardAssetFeature"
+    ],
+    "exclusion_or_mock_reason": "",
+    "access_option_ids": [
+      "ACCESS_KMA_SHORT_TERM_FORECAST_NXNY_GRID"
+    ],
+    "candidate_access_option_ids": [],
+    "selected_access_option_id": "ACCESS_KMA_SHORT_TERM_FORECAST_NXNY_GRID",
+    "fallback_access_option_ids": []
+  },
+  {
+    "source_id": "SOURCE_KMA_OBSERVED_WEATHER",
+    "name": "기상 관측/강수 관측",
+    "domain": "weather",
+    "decision_relevance": "최근 강수량, 무강수 일수, 실제 풍속/순간풍속 보정",
+    "availability_status": "REAL",
+    "verification_status": "coverage_verified",
+    "source_owner": "기상청",
+    "source_url": "https://apihub.kma.go.kr/",
+    "acquisition_method": "openapi",
+    "auth_required": "public_api_key",
+    "expected_format": "JSON, XML, CSV",
+    "storage_path": "data/raw/SOURCE_KMA_OBSERVED_WEATHER/snapshots/",
+    "value_nature": "observed",
+    "temporal_semantics": [
+      "observed_at"
+    ],
+    "temporal_resolution": "minute / hourly / daily",
+    "spatial_semantics": [
+      "point"
+    ],
+    "spatial_resolution": "station point",
+    "freshness_class": "hourly",
+    "confidence_class": "measured",
+    "raw_fields": [
+      "풍향",
+      "풍속",
+      "순간최대풍속",
+      "강수량"
+    ],
+    "derived_outputs": [
+      "DERIVED_RECENT_NO_RAIN_DAYS",
+      "DERIVED_WIND_VECTOR_CHANGE"
+    ],
+    "used_by_features": [
+      "WindTowardAssetFeature"
+    ],
+    "exclusion_or_mock_reason": "",
+    "access_option_ids": [
+      "ACCESS_KMA_OBSERVED_WEATHER_STATION"
+    ],
+    "candidate_access_option_ids": [],
+    "selected_access_option_id": "ACCESS_KMA_OBSERVED_WEATHER_STATION",
+    "fallback_access_option_ids": []
+  },
+  {
+    "source_id": "SOURCE_KMA_WEATHER_WARNINGS",
+    "name": "건조·강풍 기상특보",
+    "domain": "weather",
+    "decision_relevance": "건조특보와 강풍특보를 State 승격 및 작업 안전 판단에 사용",
+    "availability_status": "REAL",
+    "verification_status": "coverage_verified",
+    "source_owner": "기상청",
+    "source_url": "https://www.data.go.kr/data/15139476/openapi.do",
+    "acquisition_method": "openapi",
+    "auth_required": "public_api_key",
+    "expected_format": "JSON, XML, TEXT",
+    "storage_path": "data/raw/SOURCE_KMA_WEATHER_WARNINGS/snapshots/",
+    "value_nature": "event_history",
+    "temporal_semantics": [
+      "effective_period",
+      "event_occurred_at"
+    ],
+    "temporal_resolution": "event-driven",
+    "spatial_semantics": [
+      "admin_area"
+    ],
+    "spatial_resolution": "특보구역",
+    "freshness_class": "near_real_time",
+    "confidence_class": "official_primary",
+    "raw_fields": [
+      "건조특보 여부",
+      "강풍특보 여부",
+      "발효시각",
+      "특보구역"
+    ],
+    "derived_outputs": [
+      "dry_warning_flag",
+      "gale_warning_flag",
+      "DERIVED_OPERATIONAL_BLOCKER"
+    ],
+    "used_by_features": [
+      "WorkSafetyFeature"
+    ],
+    "exclusion_or_mock_reason": "",
+    "access_option_ids": [
+      "ACCESS_KMA_WEATHER_WARNINGS_WARNING_AREA"
+    ],
+    "candidate_access_option_ids": [],
+    "selected_access_option_id": "ACCESS_KMA_WEATHER_WARNINGS_WARNING_AREA",
+    "fallback_access_option_ids": []
+  },
+  {
+    "source_id": "SOURCE_FOREST_STAND_MAP",
+    "name": "임상도 및 산림 경계",
+    "domain": "forest_fuel",
+    "decision_relevance": "산림 경계, 임상, 수종, 영급, 경급, 수관밀도 등 산림연료/연속성 판단의 핵심 원천",
+    "availability_status": "REAL",
+    "verification_status": "data_acquired",
+    "source_owner": "산림청",
+    "source_url": "https://www.forest.go.kr/newkfsweb/html/HtmlPage.do?pg=/fgis/UI_KFS_5002_020100.html&mn=KFS_02_04_03_04_01&orgId=fgis",
+    "acquisition_method": "manual_download",
+    "auth_required": "login",
+    "expected_format": "SHP",
+    "storage_path": "data/raw/SOURCE_FOREST_STAND_MAP/snapshots/",
+    "value_nature": "geospatial_base_layer",
+    "temporal_semantics": [
+      "static",
+      "registry_updated_at"
+    ],
+    "temporal_resolution": "irregular source updates",
+    "spatial_semantics": [
+      "polygon"
+    ],
+    "spatial_resolution": "forest stand polygon",
+    "freshness_class": "static",
+    "confidence_class": "official_secondary",
+    "raw_fields": [
+      "임종",
+      "임상",
+      "수종",
+      "경급",
+      "영급",
+      "수관밀도"
+    ],
+    "derived_outputs": [
+      "DERIVED_FOREST_BOUNDARY",
+      "DERIVED_FOREST_CONTINUITY",
+      "forest_type",
+      "forest_density"
+    ],
+    "used_by_features": [
+      "ForestInterfaceFeature",
+      "FuelContinuityFeature",
+      "ResidentialExposureFeature",
+      "TerrainTowardAssetFeature",
+      "WettableBarrierFeature"
+    ],
+    "exclusion_or_mock_reason": "",
+    "access_option_ids": [
+      "ACCESS_FOREST_STAND_MAP_PRIMARY"
+    ],
+    "candidate_access_option_ids": [],
+    "selected_access_option_id": "ACCESS_FOREST_STAND_MAP_PRIMARY",
+    "fallback_access_option_ids": []
+  },
+  {
+    "source_id": "SOURCE_DEM_ELEVATION",
+    "name": "DEM 고도 raster",
+    "domain": "terrain",
+    "decision_relevance": "경사도, 사면방향, 능선/계곡 위치 등 terrain-derived dataset의 원천 고도 raster",
+    "availability_status": "EXCLUDE",
+    "verification_status": "source_confirmed",
+    "source_owner": "국토교통부 국토지리정보원",
+    "source_url": "https://www.data.go.kr/data/15059920/fileData.do",
+    "acquisition_method": "excluded",
+    "auth_required": "not_applicable",
+    "expected_format": "IMG",
+    "storage_path": "",
+    "value_nature": "geospatial_base_layer",
+    "temporal_semantics": [
+      "static",
+      "registry_updated_at"
+    ],
+    "temporal_resolution": "irregular / 수시 자동 갱신",
+    "spatial_semantics": [
+      "raster"
+    ],
+    "spatial_resolution": "raster tile",
+    "freshness_class": "static",
+    "confidence_class": "measured",
+    "raw_fields": [
+      "고도 raster band",
+      "NoData value",
+      "geotransform",
+      "raster CRS metadata"
+    ],
+    "derived_outputs": [],
+    "used_by_features": [],
+    "exclusion_or_mock_reason": "Excluded by user instruction on 2026-04-30. DEM IMG download and terrain-derived slope/aspect outputs are out of scope for TX04.",
+    "access_option_ids": [
+      "ACCESS_DEM_ELEVATION_PRIMARY"
+    ],
+    "candidate_access_option_ids": [],
+    "selected_access_option_id": null,
+    "fallback_access_option_ids": []
+  },
+  {
+    "source_id": "SOURCE_BUILDING_FOOTPRINTS",
+    "name": "건물 footprint 및 건물 속성",
+    "domain": "exposure_asset",
+    "decision_relevance": "주택/건물 노출과 산림 접점 산정",
+    "availability_status": "REAL",
+    "verification_status": "coverage_verified",
+    "source_owner": "국토교통부 / 브이월드",
+    "source_url": "https://www.data.go.kr/data/15123970/openapi.do; https://api.vworld.kr/ned/wfs/getBldgisSpceWFS",
+    "acquisition_method": "wms_wfs",
+    "auth_required": "public_api_key",
+    "expected_format": "WFS JSON, GML",
+    "storage_path": "data/raw/SOURCE_BUILDING_FOOTPRINTS/snapshots/full_gwangju_jeonnam_20260430/",
+    "value_nature": "geospatial_base_layer",
+    "temporal_semantics": [
+      "registry_updated_at"
+    ],
+    "temporal_resolution": "irregular registry update; last_updt_dt per feature",
+    "spatial_semantics": [
+      "polygon"
+    ],
+    "spatial_resolution": "building polygon",
+    "freshness_class": "monthly",
+    "confidence_class": "official_secondary",
+    "raw_fields": [
+      "ag_geom",
+      "src_objectid",
+      "gis_idntfc_no",
+      "pnu",
+      "ld_cpsg_code",
+      "buld_prpos_code",
+      "buld_idntfc_no",
+      "last_updt_dt"
+    ],
+    "derived_outputs": [
+      "DERIVED_ASSET_DISTANCE_DIRECTION",
+      "housing_count_near_forest"
+    ],
+    "used_by_features": [
+      "ForestInterfaceFeature",
+      "FuelContinuityFeature",
+      "ResidentialExposureFeature",
+      "TerrainTowardAssetFeature",
+      "WettableBarrierFeature",
+      "WindTowardAssetFeature"
+    ],
+    "exclusion_or_mock_reason": "",
+    "access_option_ids": [
+      "ACCESS_BUILDING_FOOTPRINTS_BBOX_WFS"
+    ],
+    "candidate_access_option_ids": [],
+    "selected_access_option_id": "ACCESS_BUILDING_FOOTPRINTS_BBOX_WFS",
+    "fallback_access_option_ids": []
+  },
+  {
+    "source_id": "SOURCE_SETTLEMENT_BOUNDARIES",
+    "name": "마을 경계",
+    "domain": "exposure_asset",
+    "decision_relevance": "주거지 노출과 산림-마을 접점 판단",
+    "availability_status": "EXCLUDE",
+    "verification_status": "source_confirmed",
+    "source_owner": "지자체 (가정)",
+    "source_url": "",
+    "acquisition_method": "excluded",
+    "auth_required": "not_applicable",
+    "expected_format": "",
+    "storage_path": "",
+    "value_nature": "synthetic_mock",
+    "temporal_semantics": [
+      "scenario_time"
+    ],
+    "temporal_resolution": "scenario-defined",
+    "spatial_semantics": [
+      "polygon"
+    ],
+    "spatial_resolution": "settlement polygon",
+    "freshness_class": "static",
+    "confidence_class": "unknown",
+    "raw_fields": [
+      "settlement_id",
+      "settlement_name",
+      "admin_sido",
+      "admin_sigungu",
+      "admin_eupmyeondong",
+      "scenario_time",
+      "valid_from",
+      "valid_to",
+      "space_key",
+      "geometry"
+    ],
+    "derived_outputs": [],
+    "used_by_features": [],
+    "exclusion_or_mock_reason": "Excluded by user decision on 2026-05-01. The existing settlement mock remains archived as PoC-only evidence and is not part of the current regional freeze.",
+    "access_option_ids": [
+      "ACCESS_SETTLEMENT_BOUNDARIES_BASELINE_SCENARIO"
+    ],
+    "candidate_access_option_ids": [],
+    "selected_access_option_id": null,
+    "fallback_access_option_ids": []
+  },
+  {
+    "source_id": "SOURCE_POPULATION_STATISTICS",
+    "name": "행정동 주민등록 인구·세대 통계",
+    "domain": "exposure_asset",
+    "decision_relevance": "ResidentialExposureFeature의 인구·세대 입력. 노출 평가에 인구 가중을 부여하고 1인 가구 등 취약성 proxy를 제공.",
+    "availability_status": "REAL",
+    "verification_status": "coverage_verified",
+    "source_owner": "행정안전부",
+    "source_url": "https://www.data.go.kr/data/15097972/fileData.do; https://www.data.go.kr/data/15097974/fileData.do",
+    "acquisition_method": "manual_download",
+    "auth_required": "none",
+    "expected_format": "CSV (EUC-KR)",
+    "storage_path": "data/raw/SOURCE_POPULATION_STATISTICS/snapshots/",
+    "value_nature": "administrative_registry",
+    "temporal_semantics": [
+      "registry_updated_at"
+    ],
+    "temporal_resolution": "monthly registry update; PoC uses 2026-03-31 publication as fixed snapshot",
+    "spatial_semantics": [
+      "no_geometry",
+      "admin_area"
+    ],
+    "spatial_resolution": "행정동 (행정기관코드 10자리)",
+    "freshness_class": "monthly",
+    "confidence_class": "official_primary",
+    "raw_fields": [
+      "행정기관코드",
+      "기준연월",
+      "시도명",
+      "시군구명",
+      "읍면동명",
+      "계",
+      "남자",
+      "여자",
+      "0세남자~100세이상남자",
+      "0세여자~100세이상여자",
+      "전체세대수",
+      "1인세대",
+      "2인세대",
+      "3인세대",
+      "4인세대",
+      "5인세대",
+      "6인세대",
+      "7인세대",
+      "8인세대",
+      "9인세대",
+      "10인이상세대"
+    ],
+    "derived_outputs": [
+      "DERIVED_POPULATION_EXPOSURE",
+      "elderly_ratio_derived_from_age_columns",
+      "single_household_ratio"
+    ],
+    "used_by_features": [
+      "ResidentialExposureFeature"
+    ],
+    "exclusion_or_mock_reason": "",
+    "access_option_ids": [
+      "ACCESS_POPULATION_STATISTICS_DATAGOKR_AGE_GENDER",
+      "ACCESS_POPULATION_STATISTICS_DATAGOKR_HOUSEHOLD_SIZE",
+      "ACCESS_POPULATION_STATISTICS_PRIMARY"
+    ],
+    "candidate_access_option_ids": [],
+    "selected_access_option_id": "ACCESS_POPULATION_STATISTICS_DATAGOKR_AGE_GENDER",
+    "fallback_access_option_ids": []
+  },
+  {
+    "source_id": "SOURCE_HERITAGE_SPATIAL",
+    "name": "문화재/국가유산 위치·보호구역",
+    "domain": "exposure_asset",
+    "decision_relevance": "문화재 보호와 강제 승격 rule의 핵심 입력",
+    "availability_status": "REAL",
+    "verification_status": "coverage_verified",
+    "source_owner": "국가유산청 / 국가유산 공간정보서비스",
+    "source_url": "https://gis-heritage.go.kr/helpAPI.do; https://portal.esrikr.com/arcgis/rest/services/Hosted/KoreaHerritageSites/FeatureServer",
+    "acquisition_method": "wms_wfs",
+    "auth_required": "none",
+    "expected_format": "WMS, WFS XML, ArcGIS JSON, GeoJSON",
+    "storage_path": "data/raw/SOURCE_HERITAGE_SPATIAL/snapshots/full_gwangju_jeonnam_20260430/",
+    "value_nature": "administrative_registry",
+    "temporal_semantics": [
+      "registry_updated_at"
+    ],
+    "temporal_resolution": "annual or irregular registry update",
+    "spatial_semantics": [
+      "polygon"
+    ],
+    "spatial_resolution": "heritage/protection polygon",
+    "freshness_class": "annual",
+    "confidence_class": "official_secondary",
+    "raw_fields": [
+      "geometry",
+      "fid",
+      "국가유산명",
+      "면적",
+      "시군구명",
+      "시군구코드",
+      "시도명",
+      "시도코드",
+      "유산코드",
+      "종목명",
+      "종목코드"
+    ],
+    "derived_outputs": [
+      "DERIVED_ASSET_DISTANCE_DIRECTION",
+      "heritage_proximity"
+    ],
+    "used_by_features": [
+      "CriticalAssetFeature",
+      "ForestInterfaceFeature",
+      "FuelContinuityFeature",
+      "TerrainTowardAssetFeature",
+      "WindTowardAssetFeature"
+    ],
+    "exclusion_or_mock_reason": "",
+    "access_option_ids": [
+      "ACCESS_HERITAGE_SPATIAL_FEATURESERVER_BBOX",
+      "ACCESS_HERITAGE_SPATIAL_OFFICIAL_WMS_WFS"
+    ],
+    "candidate_access_option_ids": [],
+    "selected_access_option_id": "ACCESS_HERITAGE_SPATIAL_FEATURESERVER_BBOX",
+    "fallback_access_option_ids": [
+      "ACCESS_HERITAGE_SPATIAL_OFFICIAL_WMS_WFS"
+    ]
+  },
+  {
+    "source_id": "SOURCE_PUBLIC_FACILITIES",
+    "name": "병원·공공시설 위치 (학교 제외)",
+    "domain": "exposure_asset",
+    "decision_relevance": "중요 시설 노출 보완",
+    "availability_status": "REAL",
+    "verification_status": "coverage_verified",
+    "source_owner": "광주광역시 / 건강보험심사평가원",
+    "source_url": "https://www.data.go.kr/data/15056455/fileData.do; https://www.data.go.kr/data/15001698/openapi.do",
+    "acquisition_method": "file_download",
+    "auth_required": "none",
+    "expected_format": "CSV; JSON/XML for fallback APIs",
+    "storage_path": "data/raw/SOURCE_PUBLIC_FACILITIES/snapshots/full_gwangju_jeonnam_20260430/",
+    "value_nature": "administrative_registry",
+    "temporal_semantics": [
+      "registry_updated_at"
+    ],
+    "temporal_resolution": "annual or irregular",
+    "spatial_semantics": [
+      "address"
+    ],
+    "spatial_resolution": "facility address; fallback APIs may provide point coordinates",
+    "freshness_class": "annual",
+    "confidence_class": "official_secondary",
+    "raw_fields": [
+      "연번",
+      "구분",
+      "기관명",
+      "소재지도로명주소",
+      "전화번호",
+      "팩스번호",
+      "데이터기준일자"
+    ],
+    "derived_outputs": [
+      "DERIVED_ASSET_DISTANCE_DIRECTION",
+      "public_facility_proximity"
+    ],
+    "used_by_features": [
+      "CriticalAssetFeature",
+      "ForestInterfaceFeature",
+      "FuelContinuityFeature",
+      "TerrainTowardAssetFeature",
+      "WindTowardAssetFeature"
+    ],
+    "exclusion_or_mock_reason": "",
+    "access_option_ids": [
+      "ACCESS_PUBLIC_FACILITIES_GJ_PUBLIC_HEALTH_CSV",
+      "ACCESS_PUBLIC_FACILITIES_SCHOOL_LOCATION_API",
+      "ACCESS_PUBLIC_FACILITIES_HIRA_HOSPITAL_API",
+      "ACCESS_PUBLIC_FACILITIES_TBD"
+    ],
+    "candidate_access_option_ids": [],
+    "selected_access_option_id": "ACCESS_PUBLIC_FACILITIES_GJ_PUBLIC_HEALTH_CSV",
+    "fallback_access_option_ids": [
+      "ACCESS_PUBLIC_FACILITIES_HIRA_HOSPITAL_API"
+    ]
+  },
+  {
+    "source_id": "SOURCE_VULNERABLE_FACILITIES",
+    "name": "요양시설 등 취약시설 위치",
+    "domain": "exposure_asset",
+    "decision_relevance": "대피 취약 대상 노출 판단",
+    "availability_status": "REAL",
+    "verification_status": "coverage_verified",
+    "source_owner": "광주광역시 / 전라남도; Jeonnam elderly welfare API gap covered by generated fallback",
+    "source_url": "https://www.data.go.kr/data/15043855/fileData.do; https://www.data.go.kr/data/15102882/openapi.do",
+    "acquisition_method": "file_download",
+    "auth_required": "none",
+    "expected_format": "CSV; API-shaped JSON, CSV, GeoJSON for mock fallback",
+    "storage_path": "data/raw/SOURCE_VULNERABLE_FACILITIES/snapshots/full_gwangju_jeonnam_20260430/; data/mock/SOURCE_VULNERABLE_FACILITIES/scenario_baseline/",
+    "value_nature": "administrative_registry",
+    "temporal_semantics": [
+      "registry_updated_at",
+      "scenario_time"
+    ],
+    "temporal_resolution": "annual; scenario-defined for Jeonnam mock fallback",
+    "spatial_semantics": [
+      "point",
+      "address",
+      "admin_area"
+    ],
+    "spatial_resolution": "facility address/admin text; synthetic point within admin boundary for mock fallback",
+    "freshness_class": "annual",
+    "confidence_class": "official_secondary",
+    "raw_fields": [
+      "연번",
+      "시도",
+      "시군구",
+      "시설명",
+      "시설종류",
+      "장기요양지정기관여부",
+      "시설입소현황(정원)",
+      "소재지도로명주소",
+      "시설설치일자",
+      "휴업중",
+      "데이터기준일자",
+      "apiSeq",
+      "city",
+      "location",
+      "posX",
+      "posY",
+      "space_key",
+      "scenario_time",
+      "valid_from",
+      "valid_to",
+      "mock_source"
+    ],
+    "derived_outputs": [
+      "DERIVED_ASSET_DISTANCE_DIRECTION",
+      "vulnerable_facility_proximity"
+    ],
+    "used_by_features": [
+      "CriticalAssetFeature",
+      "ForestInterfaceFeature",
+      "FuelContinuityFeature",
+      "TerrainTowardAssetFeature",
+      "WindTowardAssetFeature"
+    ],
+    "exclusion_or_mock_reason": "",
+    "access_option_ids": [
+      "ACCESS_VULNERABLE_FACILITIES_GJ_SENIOR_NURSING_CSV",
+      "ACCESS_VULNERABLE_FACILITIES_JN_ELDERLY_WELFARE_MOCK",
+      "ACCESS_VULNERABLE_FACILITIES_TBD"
+    ],
+    "candidate_access_option_ids": [],
+    "selected_access_option_id": "ACCESS_VULNERABLE_FACILITIES_GJ_SENIOR_NURSING_CSV",
+    "fallback_access_option_ids": [
+      "ACCESS_VULNERABLE_FACILITIES_JN_ELDERLY_WELFARE_MOCK"
+    ]
+  },
+  {
+    "source_id": "SOURCE_CRITICAL_INFRASTRUCTURE_DETAIL",
+    "name": "전력·통신시설 상세 위치",
+    "domain": "exposure_asset",
+    "decision_relevance": "중요 기반시설 노출 판단",
+    "availability_status": "EXCLUDE",
+    "verification_status": "unverified",
+    "source_owner": "전력·통신기관 (보안)",
+    "source_url": "",
+    "acquisition_method": "excluded",
+    "auth_required": "agency_only",
+    "expected_format": "not_applicable",
+    "storage_path": "",
+    "value_nature": "administrative_registry",
+    "temporal_semantics": [
+      "static"
+    ],
+    "temporal_resolution": "irregular updates",
+    "spatial_semantics": [
+      "point",
+      "line"
+    ],
+    "spatial_resolution": "facility point/line",
+    "freshness_class": "static",
+    "confidence_class": "unknown",
+    "raw_fields": [
+      "전력시설 위치",
+      "통신시설 위치"
+    ],
+    "derived_outputs": [],
+    "used_by_features": [],
+    "exclusion_or_mock_reason": "보안 민감도가 높고 초기 실습에서 문화재/공공시설로 대체 가능",
+    "access_option_ids": [
+      "ACCESS_CRITICAL_INFRASTRUCTURE_DETAIL_DETAILED_INTERNAL"
+    ],
+    "candidate_access_option_ids": [],
+    "selected_access_option_id": null,
+    "fallback_access_option_ids": []
+  },
+  {
+    "source_id": "SOURCE_ROAD_NETWORK",
+    "name": "도로망",
+    "domain": "access_water",
+    "decision_relevance": "접근성, 방어선, 이동시간의 기본 원천",
+    "availability_status": "REAL",
+    "verification_status": "coverage_verified",
+    "source_owner": "국토교통부",
+    "source_url": "https://www.data.go.kr/data/15025526/fileData.do",
+    "acquisition_method": "file_download",
+    "auth_required": "none",
+    "expected_format": "SHP, DBF, SHX, PRJ, CSV",
+    "storage_path": "data/raw/SOURCE_ROAD_NETWORK/snapshots/",
+    "value_nature": "geospatial_base_layer",
+    "temporal_semantics": [
+      "registry_updated_at",
+      "static"
+    ],
+    "temporal_resolution": "per-feature UPDATEDATE plus package date 2026-01-13",
+    "spatial_semantics": [
+      "line",
+      "point"
+    ],
+    "spatial_resolution": "MOCT_LINK polyline / MOCT_NODE point",
+    "freshness_class": "annual",
+    "confidence_class": "official_secondary",
+    "raw_fields": [
+      "MOCT_LINK.LINK_ID",
+      "MOCT_LINK.F_NODE",
+      "MOCT_LINK.T_NODE",
+      "MOCT_LINK.LANES",
+      "MOCT_LINK.ROAD_RANK",
+      "MOCT_LINK.ROAD_TYPE",
+      "MOCT_LINK.ROAD_NAME",
+      "MOCT_LINK.MAX_SPD",
+      "MOCT_LINK.LENGTH",
+      "MOCT_LINK.UPDATEDATE",
+      "MOCT_NODE.NODE_ID",
+      "MOCT_NODE.NODE_TYPE",
+      "MOCT_NODE.NODE_NAME",
+      "MOCT_NODE.UPDATEDATE",
+      "SHP geometry"
+    ],
+    "derived_outputs": [
+      "DERIVED_ROUTE_DISTANCE_TIME",
+      "nearest_road",
+      "road_adjacent_segment"
+    ],
+    "used_by_features": [
+      "DispatchLeadTimeFeature",
+      "FuelContinuityFeature",
+      "VehicleAccessFeature",
+      "WettableBarrierFeature",
+      "WorkSafetyFeature"
+    ],
+    "exclusion_or_mock_reason": "",
+    "access_option_ids": [
+      "ACCESS_ROAD_NETWORK_PRIMARY"
+    ],
+    "candidate_access_option_ids": [],
+    "selected_access_option_id": "ACCESS_ROAD_NETWORK_PRIMARY",
+    "fallback_access_option_ids": []
+  },
+  {
+    "source_id": "SOURCE_FOREST_ROAD_NETWORK",
+    "name": "임도망도",
+    "domain": "access_water",
+    "decision_relevance": "산림 내부 접근성, 차량 접근 가능성, 작업 안전성 판단의 핵심 원천",
+    "availability_status": "REAL",
+    "verification_status": "data_acquired",
+    "source_owner": "산림청",
+    "source_url": "https://www.forest.go.kr/kfsweb/kfi/kfs/trail/fRMap.do?pblicDataId=PBD0000062&tabs=1&mn=NKFS_06_08_02&subTitle=%EC%9E%84%EB%8F%84%EB%A7%9D%EB%8F%84",
+    "acquisition_method": "manual_download",
+    "auth_required": "manual_request",
+    "expected_format": "SHP",
+    "storage_path": "data/raw/SOURCE_FOREST_ROAD_NETWORK/snapshots/",
+    "value_nature": "geospatial_base_layer",
+    "temporal_semantics": [
+      "static",
+      "registry_updated_at"
+    ],
+    "temporal_resolution": "irregular source updates",
+    "spatial_semantics": [
+      "line"
+    ],
+    "spatial_resolution": "forest road line",
+    "freshness_class": "static",
+    "confidence_class": "official_secondary",
+    "raw_fields": [
+      "임도 노선",
+      "시공년도",
+      "거리"
+    ],
+    "derived_outputs": [
+      "forest_road_proximity",
+      "forest_access_route"
+    ],
+    "used_by_features": [
+      "DispatchLeadTimeFeature",
+      "VehicleAccessFeature",
+      "WettableBarrierFeature",
+      "WorkSafetyFeature"
+    ],
+    "exclusion_or_mock_reason": "",
+    "access_option_ids": [
+      "ACCESS_FOREST_ROAD_NETWORK_PRIMARY"
+    ],
+    "candidate_access_option_ids": [],
+    "selected_access_option_id": "ACCESS_FOREST_ROAD_NETWORK_PRIMARY",
+    "fallback_access_option_ids": []
+  },
+  {
+    "source_id": "SOURCE_ROAD_ACCESS_CONSTRAINTS",
+    "name": "도로 폭·회차·협소도로·차량 진입 가능성",
+    "domain": "access_water",
+    "decision_relevance": "실제 소방차 진입 가능성과 작업 안전 판단",
+    "availability_status": "MOCK",
+    "verification_status": "coverage_verified",
+    "source_owner": "현장조사 가정 mock",
+    "source_url": "",
+    "acquisition_method": "generated_mock",
+    "auth_required": "not_applicable",
+    "expected_format": "CSV, GeoJSON",
+    "storage_path": "data/mock/SOURCE_ROAD_ACCESS_CONSTRAINTS/scenario_baseline/",
+    "value_nature": "synthetic_mock",
+    "temporal_semantics": [
+      "scenario_time"
+    ],
+    "temporal_resolution": "scenario-defined",
+    "spatial_semantics": [
+      "segment"
+    ],
+    "spatial_resolution": "one generated road access segment per current legal 읍면동 row",
+    "freshness_class": "scenario",
+    "confidence_class": "mock",
+    "raw_fields": [
+      "road_segment_id",
+      "road_name",
+      "road_class",
+      "start_node_id",
+      "end_node_id",
+      "geometry_wkt",
+      "road_width_m",
+      "slope_percent",
+      "paved_flag",
+      "firetruck_accessible",
+      "turnaround_available",
+      "narrow_road_flag",
+      "valid_from",
+      "valid_to",
+      "mock_seed",
+      "mock_generated_at",
+      "mock_reason",
+      "coverage_unit_id",
+      "coverage_unit_name",
+      "coverage_basis",
+      "code_match_status"
+    ],
+    "derived_outputs": [
+      "firetruck_access_flag",
+      "turnaround_flag",
+      "narrow_road_flag"
+    ],
+    "used_by_features": [
+      "DispatchLeadTimeFeature",
+      "VehicleAccessFeature",
+      "WateringDurationFeature",
+      "WorkSafetyFeature"
+    ],
+    "exclusion_or_mock_reason": "공개 도로망만으로 소방차 진입성과 회차 가능성을 확정하기 어려워 current legal 읍면동 coverage mock으로 통일",
+    "access_option_ids": [
+      "ACCESS_ROAD_ACCESS_CONSTRAINTS_BASELINE_SCENARIO"
+    ],
+    "candidate_access_option_ids": [],
+    "selected_access_option_id": "ACCESS_ROAD_ACCESS_CONSTRAINTS_BASELINE_SCENARIO",
+    "fallback_access_option_ids": []
+  },
+  {
+    "source_id": "SOURCE_MUNICIPAL_FIRE_WATER_FACILITIES",
+    "name": "소화전·비상소화장치·소방용수시설",
+    "domain": "access_water",
+    "decision_relevance": "주수 가능 수원 접근성 판단",
+    "availability_status": "MOCK",
+    "verification_status": "coverage_verified",
+    "source_owner": "지방소방기관 공개자료 기반 mock",
+    "source_url": "https://www.data.go.kr/data/15054971/fileData.do",
+    "acquisition_method": "generated_mock",
+    "auth_required": "not_applicable",
+    "expected_format": "CSV, GeoJSON",
+    "storage_path": "data/mock/SOURCE_MUNICIPAL_FIRE_WATER_FACILITIES/scenario_baseline/",
+    "value_nature": "synthetic_mock",
+    "temporal_semantics": [
+      "scenario_time"
+    ],
+    "temporal_resolution": "scenario-defined",
+    "spatial_semantics": [
+      "point"
+    ],
+    "spatial_resolution": "one generated water facility point per current legal 읍면동 row",
+    "freshness_class": "scenario",
+    "confidence_class": "mock",
+    "raw_fields": [
+      "facility_id",
+      "facility_type",
+      "region_code",
+      "longitude",
+      "latitude",
+      "geometry_wkt",
+      "usable_status",
+      "supply_capacity_class",
+      "valid_from",
+      "valid_to",
+      "mock_seed",
+      "mock_generated_at",
+      "mock_reason",
+      "coverage_unit_id",
+      "coverage_unit_name",
+      "coverage_basis",
+      "code_match_status"
+    ],
+    "derived_outputs": [
+      "DERIVED_WATER_SOURCE_DISTANCE",
+      "nearest_hydrant_distance"
+    ],
+    "used_by_features": [
+      "WaterSourceFeature"
+    ],
+    "exclusion_or_mock_reason": "광주·전남 전체 point coverage가 공개 source별로 파편화되어 current legal 읍면동 coverage mock으로 통일",
+    "access_option_ids": [
+      "ACCESS_MUNICIPAL_FIRE_WATER_FACILITIES_BASELINE_SCENARIO"
+    ],
+    "candidate_access_option_ids": [],
+    "selected_access_option_id": "ACCESS_MUNICIPAL_FIRE_WATER_FACILITIES_BASELINE_SCENARIO",
+    "fallback_access_option_ids": []
+  },
+  {
+    "source_id": "SOURCE_FOREST_FIRE_EXTINGUISHING_FACILITIES",
+    "name": "산불소화시설",
+    "domain": "access_water",
+    "decision_relevance": "산림 인접 소화시설 접근성 보완",
+    "availability_status": "REAL",
+    "verification_status": "coverage_verified",
+    "source_owner": "산림청",
+    "source_url": "https://www.data.go.kr/data/15144785/fileData.do",
+    "acquisition_method": "file_download",
+    "auth_required": "none",
+    "expected_format": "CSV; fallback JSON/XML; supplemental mock CSV/GeoJSON for regional coverage gap",
+    "storage_path": "data/raw/SOURCE_FOREST_FIRE_EXTINGUISHING_FACILITIES/snapshots/; data/mock/SOURCE_FOREST_FIRE_EXTINGUISHING_FACILITIES/scenario_baseline/",
+    "value_nature": "administrative_registry",
+    "temporal_semantics": [
+      "registry_updated_at",
+      "static"
+    ],
+    "temporal_resolution": "annual registry metadata",
+    "spatial_semantics": [
+      "point",
+      "address"
+    ],
+    "spatial_resolution": "facility point/address",
+    "freshness_class": "annual",
+    "confidence_class": "official_secondary",
+    "raw_fields": [
+      "경도",
+      "위도",
+      "원격제어",
+      "관리기관1",
+      "관리기관2",
+      "설치위치",
+      "보호대상구분",
+      "보호대상물",
+      "설치년도",
+      "coverage_unit_id",
+      "facility_id",
+      "record_origin",
+      "mock_generated_at"
+    ],
+    "derived_outputs": [
+      "DERIVED_WATER_SOURCE_DISTANCE",
+      "forest_extinguishing_facility_proximity"
+    ],
+    "used_by_features": [
+      "WaterSourceFeature"
+    ],
+    "exclusion_or_mock_reason": "공식 원본은 보존하되 광주·전남 전체 coverage는 coverage_supplement mock으로 보완",
+    "access_option_ids": [
+      "ACCESS_FOREST_FIRE_EXTINGUISHING_FACILITIES_PRIMARY",
+      "ACCESS_FOREST_FIRE_EXTINGUISHING_FACILITIES_OPENAPI",
+      "ACCESS_FOREST_FIRE_EXTINGUISHING_FACILITIES_COVERAGE_SUPPLEMENT"
+    ],
+    "candidate_access_option_ids": [],
+    "selected_access_option_id": "ACCESS_FOREST_FIRE_EXTINGUISHING_FACILITIES_PRIMARY",
+    "fallback_access_option_ids": [
+      "ACCESS_FOREST_FIRE_EXTINGUISHING_FACILITIES_OPENAPI",
+      "ACCESS_FOREST_FIRE_EXTINGUISHING_FACILITIES_COVERAGE_SUPPLEMENT"
+    ]
+  },
+  {
+    "source_id": "SOURCE_NATURAL_WATER_SOURCES",
+    "name": "하천·저수지 등 자연 수원",
+    "domain": "access_water",
+    "decision_relevance": "소방용수 mock을 보완할 수 있으나 이번 PoC decision path에서는 제외",
+    "availability_status": "EXCLUDE",
+    "verification_status": "api_tested",
+    "source_owner": "국토교통부 / VWorld",
+    "source_url": "https://www.data.go.kr/data/15058825/openapi.do",
+    "acquisition_method": "excluded",
+    "auth_required": "not_applicable",
+    "expected_format": "not_applicable",
+    "storage_path": "",
+    "value_nature": "geospatial_base_layer",
+    "temporal_semantics": [
+      "registry_updated_at",
+      "static"
+    ],
+    "temporal_resolution": "source metadata modified date; dataset time range 2023년 6월",
+    "spatial_semantics": [
+      "polygon"
+    ],
+    "spatial_resolution": "river network polygon feature",
+    "freshness_class": "static",
+    "confidence_class": "official_secondary",
+    "raw_fields": [
+      "riv_nm",
+      "cat_nam",
+      "geometry",
+      "response.record",
+      "response.page"
+    ],
+    "derived_outputs": [],
+    "used_by_features": [],
+    "exclusion_or_mock_reason": "자연 수원/하천망은 PoC 핵심 decision path에서 제외한다. VWorld API probe는 성공했지만 하천망은 보조 proxy이고 저수지 coverage가 별도 source를 요구하므로 이번 phase에서는 사용하지 않는다.",
+    "access_option_ids": [
+      "ACCESS_NATURAL_WATER_SOURCES_VWORLD_RIVER_NETWORK",
+      "ACCESS_NATURAL_WATER_SOURCES_PRIMARY"
+    ],
+    "candidate_access_option_ids": [],
+    "selected_access_option_id": null,
+    "fallback_access_option_ids": []
+  },
+  {
+    "source_id": "SOURCE_NATURAL_BARRIERS",
+    "name": "하천·공터 등 자연/공간 차폐물",
+    "domain": "access_water",
+    "decision_relevance": "차폐 후보 source였으나 이번 PoC decision path에서는 제외",
+    "availability_status": "EXCLUDE",
+    "verification_status": "source_confirmed",
+    "source_owner": "국토교통부 국토지리정보원",
+    "source_url": "https://www.data.go.kr/data/15059910/fileData.do",
+    "acquisition_method": "excluded",
+    "auth_required": "not_applicable",
+    "expected_format": "not_applicable",
+    "storage_path": "",
+    "value_nature": "geospatial_base_layer",
+    "temporal_semantics": [
+      "registry_updated_at",
+      "static"
+    ],
+    "temporal_resolution": "irregular metadata updates",
+    "spatial_semantics": [
+      "line",
+      "polygon"
+    ],
+    "spatial_resolution": "line/polygon",
+    "freshness_class": "static",
+    "confidence_class": "official_secondary",
+    "raw_fields": [],
+    "derived_outputs": [],
+    "used_by_features": [],
+    "exclusion_or_mock_reason": "기본공간정보의 제작년도/활용성 문제와 PoC 범위 단순화를 고려하여 자연 차폐물 source를 제외한다.",
+    "access_option_ids": [
+      "ACCESS_NATURAL_BARRIERS_PRIMARY"
+    ],
+    "candidate_access_option_ids": [],
+    "selected_access_option_id": null,
+    "fallback_access_option_ids": []
+  },
+  {
+    "source_id": "SOURCE_SURFACE_FUEL_CONDITION",
+    "name": "낙엽·마른 풀·잡목 지표연료 상태",
+    "domain": "forest_fuel",
+    "decision_relevance": "물을 뿌렸을 때 효과가 있는 연료인지 판단",
+    "availability_status": "MOCK",
+    "verification_status": "coverage_verified",
+    "source_owner": "현장조사 (가정)",
+    "source_url": "",
+    "acquisition_method": "generated_mock",
+    "auth_required": "not_applicable",
+    "expected_format": "CSV, GeoJSON",
+    "storage_path": "data/mock/SOURCE_SURFACE_FUEL_CONDITION/scenario_baseline/",
+    "value_nature": "synthetic_mock",
+    "temporal_semantics": [
+      "scenario_time"
+    ],
+    "temporal_resolution": "scenario-defined",
+    "spatial_semantics": [
+      "segment",
+      "polygon"
+    ],
+    "spatial_resolution": "generated segment polygon",
+    "freshness_class": "scenario",
+    "confidence_class": "mock",
+    "raw_fields": [
+      "scenario_time",
+      "segment_id",
+      "surface_fuel_type",
+      "surface_fuel_load_class",
+      "wetting_response_class",
+      "field_verified",
+      "geometry_wkt",
+      "mock_seed",
+      "mock_generated_at",
+      "mock_reason"
+    ],
+    "derived_outputs": [
+      "DERIVED_SURFACE_FUEL_WETTABLE",
+      "surface_fuel_load"
+    ],
+    "used_by_features": [
+      "WettableBarrierFeature"
+    ],
+    "exclusion_or_mock_reason": "공개 공간 데이터로 지표연료 상태를 직접 확인하기 어려움",
+    "access_option_ids": [
+      "ACCESS_SURFACE_FUEL_CONDITION_BASELINE_SCENARIO"
+    ],
+    "candidate_access_option_ids": [],
+    "selected_access_option_id": "ACCESS_SURFACE_FUEL_CONDITION_BASELINE_SCENARIO",
+    "fallback_access_option_ids": []
+  },
+  {
+    "source_id": "SOURCE_WORKSITE_HAZARD_CONDITIONS",
+    "name": "낙석·연기 노출 등 작업장 위험",
+    "domain": "operational_constraint",
+    "decision_relevance": "작업 안전과 현장 투입 가능성 판단",
+    "availability_status": "MOCK",
+    "verification_status": "coverage_verified",
+    "source_owner": "현장조사 (가정)",
+    "source_url": "",
+    "acquisition_method": "generated_mock",
+    "auth_required": "not_applicable",
+    "expected_format": "CSV, GeoJSON",
+    "storage_path": "data/mock/SOURCE_WORKSITE_HAZARD_CONDITIONS/scenario_baseline/",
+    "value_nature": "synthetic_mock",
+    "temporal_semantics": [
+      "effective_period",
+      "scenario_time"
+    ],
+    "temporal_resolution": "scenario-defined effective period",
+    "spatial_semantics": [
+      "segment",
+      "point"
+    ],
+    "spatial_resolution": "generated segment hazard point",
+    "freshness_class": "scenario",
+    "confidence_class": "mock",
+    "raw_fields": [
+      "valid_from",
+      "valid_to",
+      "segment_id",
+      "rockfall_risk_flag",
+      "smoke_exposure_possible",
+      "hazard_severity",
+      "geometry_wkt",
+      "mock_seed",
+      "mock_generated_at",
+      "mock_reason"
+    ],
+    "derived_outputs": [
+      "rockfall_risk_flag",
+      "smoke_exposure_possible"
+    ],
+    "used_by_features": [
+      "WorkSafetyFeature"
+    ],
+    "exclusion_or_mock_reason": "낙석·연기 노출 가능성은 현장성 데이터로 공개 coverage가 부족",
+    "access_option_ids": [
+      "ACCESS_WORKSITE_HAZARD_CONDITIONS_BASELINE_SCENARIO"
+    ],
+    "candidate_access_option_ids": [],
+    "selected_access_option_id": "ACCESS_WORKSITE_HAZARD_CONDITIONS_BASELINE_SCENARIO",
+    "fallback_access_option_ids": []
+  },
+  {
+    "source_id": "SOURCE_FIRE_STATION_CENTERS",
+    "name": "소방서·119안전센터 위치",
+    "domain": "fire_response_resource",
+    "decision_relevance": "출동 기준점과 대응 가능성 판단",
+    "availability_status": "REAL",
+    "verification_status": "coverage_verified",
+    "source_owner": "소방청",
+    "source_url": "https://www.data.go.kr/data/15065056/fileData.do",
+    "acquisition_method": "file_download",
+    "auth_required": "none",
+    "expected_format": "CSV; fallback JSON, XML",
+    "storage_path": "data/raw/SOURCE_FIRE_STATION_CENTERS/snapshots/",
+    "value_nature": "administrative_registry",
+    "temporal_semantics": [
+      "registry_updated_at"
+    ],
+    "temporal_resolution": "annual registry metadata",
+    "spatial_semantics": [
+      "address"
+    ],
+    "spatial_resolution": "119안전센터 address row",
+    "freshness_class": "annual",
+    "confidence_class": "official_secondary",
+    "raw_fields": [
+      "순번",
+      "시도본부",
+      "소방서명",
+      "119안전센터명",
+      "주소",
+      "전화번호",
+      "팩스번호"
+    ],
+    "derived_outputs": [
+      "DERIVED_ROUTE_DISTANCE_TIME",
+      "nearest_station"
+    ],
+    "used_by_features": [
+      "DispatchLeadTimeFeature"
+    ],
+    "exclusion_or_mock_reason": "",
+    "access_option_ids": [
+      "ACCESS_FIRE_STATION_CENTERS_PRIMARY",
+      "ACCESS_FIRE_STATION_CENTERS_AUTO_OPENAPI"
+    ],
+    "candidate_access_option_ids": [],
+    "selected_access_option_id": "ACCESS_FIRE_STATION_CENTERS_PRIMARY",
+    "fallback_access_option_ids": [
+      "ACCESS_FIRE_STATION_CENTERS_AUTO_OPENAPI"
+    ]
+  },
+  {
+    "source_id": "SOURCE_FIRE_RESOURCE_AVAILABILITY",
+    "name": "소방차량·인력·장비 가용성",
+    "domain": "fire_response_resource",
+    "decision_relevance": "제한된 소방자원 배정 가능성 판단",
+    "availability_status": "MOCK",
+    "verification_status": "coverage_verified",
+    "source_owner": "소방기관 (가정)",
+    "source_url": "",
+    "acquisition_method": "generated_mock",
+    "auth_required": "not_applicable",
+    "expected_format": "CSV",
+    "storage_path": "data/mock/SOURCE_FIRE_RESOURCE_AVAILABILITY/scenario_baseline/",
+    "value_nature": "synthetic_mock",
+    "temporal_semantics": [
+      "effective_period",
+      "scenario_time"
+    ],
+    "temporal_resolution": "8-hour shift period over PoC window",
+    "spatial_semantics": [
+      "address",
+      "no_geometry"
+    ],
+    "spatial_resolution": "station_id / station address",
+    "freshness_class": "scenario",
+    "confidence_class": "mock",
+    "raw_fields": [
+      "valid_from",
+      "valid_to",
+      "station_id",
+      "station_name",
+      "fire_station_name",
+      "station_address",
+      "available_staff",
+      "available_engines",
+      "available_water_tankers",
+      "available_portable_pumps",
+      "resource_status",
+      "mock_seed",
+      "mock_generated_at",
+      "mock_reason"
+    ],
+    "derived_outputs": [
+      "equipment_availability",
+      "staffing_availability"
+    ],
+    "used_by_features": [
+      "WateringDurationFeature"
+    ],
+    "exclusion_or_mock_reason": "실시간 자원 가용성은 공개 데이터로 확보 곤란",
+    "access_option_ids": [
+      "ACCESS_FIRE_RESOURCE_AVAILABILITY_BASELINE_SCENARIO"
+    ],
+    "candidate_access_option_ids": [],
+    "selected_access_option_id": "ACCESS_FIRE_RESOURCE_AVAILABILITY_BASELINE_SCENARIO",
+    "fallback_access_option_ids": []
+  },
+  {
+    "source_id": "SOURCE_PREWATERING_EQUIPMENT_CAPACITY",
+    "name": "예비주수 차량·장비 작업능력",
+    "domain": "fire_response_resource",
+    "decision_relevance": "주수 소요시간과 resource package 판단",
+    "availability_status": "MOCK",
+    "verification_status": "coverage_verified",
+    "source_owner": "운영경험 (가정)",
+    "source_url": "",
+    "acquisition_method": "generated_mock",
+    "auth_required": "not_applicable",
+    "expected_format": "CSV",
+    "storage_path": "data/mock/SOURCE_PREWATERING_EQUIPMENT_CAPACITY/scenario_baseline/",
+    "value_nature": "synthetic_mock",
+    "temporal_semantics": [
+      "scenario_time",
+      "effective_period"
+    ],
+    "temporal_resolution": "scenario-defined effective period",
+    "spatial_semantics": [
+      "no_geometry"
+    ],
+    "spatial_resolution": "station/equipment id",
+    "freshness_class": "scenario",
+    "confidence_class": "mock",
+    "raw_fields": [
+      "scenario_time",
+      "valid_from",
+      "valid_to",
+      "station_id",
+      "equipment_id",
+      "equipment_type",
+      "watering_rate_lpm",
+      "setup_time_min",
+      "effective_width_m",
+      "mobility_class",
+      "mock_seed",
+      "mock_generated_at",
+      "mock_reason"
+    ],
+    "derived_outputs": [
+      "watering_rate",
+      "setup_time"
+    ],
+    "used_by_features": [
+      "WateringDurationFeature"
+    ],
+    "exclusion_or_mock_reason": "실제 작업능력은 장비·현장 여건별 내부자료 성격",
+    "access_option_ids": [
+      "ACCESS_PREWATERING_EQUIPMENT_CAPACITY_BASELINE_SCENARIO"
+    ],
+    "candidate_access_option_ids": [],
+    "selected_access_option_id": "ACCESS_PREWATERING_EQUIPMENT_CAPACITY_BASELINE_SCENARIO",
+    "fallback_access_option_ids": []
+  },
+  {
+    "source_id": "SOURCE_SUN_EVENT_CALENDAR",
+    "name": "일몰·일출 시간",
+    "domain": "operational_constraint",
+    "decision_relevance": "야간 작업 여부와 작업 가능 시간창 판단",
+    "availability_status": "REAL",
+    "verification_status": "coverage_verified",
+    "source_owner": "한국천문연구원",
+    "source_url": "https://www.data.go.kr/data/15012688/openapi.do",
+    "acquisition_method": "openapi",
+    "auth_required": "public_api_key",
+    "expected_format": "JSON, XML, CSV",
+    "storage_path": "data/raw/SOURCE_SUN_EVENT_CALENDAR/snapshots/",
+    "value_nature": "static_reference",
+    "temporal_semantics": [
+      "static",
+      "effective_period"
+    ],
+    "temporal_resolution": "daily",
+    "spatial_semantics": [
+      "point",
+      "admin_area"
+    ],
+    "spatial_resolution": "representative point / admin area",
+    "freshness_class": "daily",
+    "confidence_class": "official_primary",
+    "raw_fields": [
+      "일몰시각",
+      "일출시각",
+      "야간 여부"
+    ],
+    "derived_outputs": [
+      "DERIVED_WORK_WINDOW",
+      "sunset_time",
+      "night_work_flag"
+    ],
+    "used_by_features": [
+      "WorkSafetyFeature"
+    ],
+    "exclusion_or_mock_reason": "",
+    "access_option_ids": [
+      "ACCESS_SUN_EVENT_CALENDAR_PRIMARY",
+      "ACCESS_SUN_EVENT_CALENDAR_AREA"
+    ],
+    "candidate_access_option_ids": [],
+    "selected_access_option_id": "ACCESS_SUN_EVENT_CALENDAR_AREA",
+    "fallback_access_option_ids": [
+      "ACCESS_SUN_EVENT_CALENDAR_PRIMARY"
+    ]
+  }
+]

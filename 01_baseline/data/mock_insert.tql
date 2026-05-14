@@ -1,0 +1,110 @@
+insert
+$region-gangneung isa administrative-region, has name "강릉시", has code "R-001";
+$region-sokcho isa administrative-region, has name "속초시", has code "R-002";
+
+$zone-alpha isa forest-zone, has name "산림구역-알파", has slope-class "보통-경사", has wind-exposure "중간", has access-intensity "높음";
+$zone-bravo isa forest-zone, has name "산림구역-브라보", has slope-class "급경사", has wind-exposure "높음", has access-intensity "중간";
+$zone-charlie isa forest-zone, has name "산림구역-찰리", has slope-class "급경사", has wind-exposure "높음", has access-intensity "낮음";
+
+(zone: $zone-alpha, region: $region-gangneung) isa zone-located-in-region;
+(zone: $zone-bravo, region: $region-gangneung) isa zone-located-in-region;
+(zone: $zone-charlie, region: $region-sokcho) isa zone-located-in-region;
+
+$trail-a1 isa trail, has name "탐방로-A1";
+$trail-b1 isa trail, has name "탐방로-B1";
+(trail-role: $trail-a1, zone: $zone-alpha) isa trail-located-in-zone;
+(trail-role: $trail-b1, zone: $zone-bravo) isa trail-located-in-zone;
+
+$settlement-s1 isa settlement, has name "마을-S1";
+$facility-f1 isa critical-facility, has name "정수장-F1";
+(settlement-role: $settlement-s1, zone: $zone-bravo) isa settlement-adjacent-to-zone;
+
+$obs-alpha isa weather-observation, has recorded-at 2026-05-05T08:00:00, has temperature-c 23.0, has humidity-percent 58.0, has wind-speed-ms 2.9;
+$obs-bravo isa weather-observation, has recorded-at 2026-05-05T08:00:00, has temperature-c 31.0, has humidity-percent 21.0, has wind-speed-ms 8.3;
+$obs-charlie isa weather-observation, has recorded-at 2026-05-05T12:00:00, has temperature-c 33.2, has humidity-percent 18.5, has wind-speed-ms 10.0;
+(observation: $obs-alpha, zone: $zone-alpha) isa weather-observed-in-zone;
+(observation: $obs-bravo, zone: $zone-bravo) isa weather-observed-in-zone;
+(observation: $obs-charlie, zone: $zone-charlie) isa weather-observed-in-zone;
+
+$fuel-alpha isa fuel-moisture-measurement, has recorded-at 2026-05-05T08:00:00, has fuel-moisture-percent 16.0;
+$fuel-bravo isa fuel-moisture-measurement, has recorded-at 2026-05-05T08:00:00, has fuel-moisture-percent 8.0;
+(measurement: $fuel-alpha, zone: $zone-alpha) isa fuel-moisture-observed-in-zone;
+(measurement: $fuel-bravo, zone: $zone-bravo) isa fuel-moisture-observed-in-zone;
+
+$risk-alpha isa risk-assessment, has recorded-at 2026-05-05T08:10:00, has risk-index-value 0.42, has risk-level "중간";
+$risk-bravo isa risk-assessment, has recorded-at 2026-05-05T08:10:00, has risk-index-value 0.87, has risk-level "높음";
+$risk-charlie isa risk-assessment, has recorded-at 2026-05-05T12:10:00, has risk-index-value 0.91, has risk-level "높음";
+(assessment: $risk-alpha, zone: $zone-alpha) isa risk-assessment-for-zone;
+(assessment: $risk-bravo, zone: $zone-bravo) isa risk-assessment-for-zone;
+(assessment: $risk-charlie, zone: $zone-charlie) isa risk-assessment-for-zone;
+
+$decision-ctrl-bravo isa control-decision, has action-type "탐방로-통제", has start-time 2026-05-05T09:00:00, has end-time 2026-05-05T23:00:00;
+(decision: $decision-ctrl-bravo, zone: $zone-bravo) isa control-decision-for-zone;
+(decision: $decision-ctrl-bravo, trail-role: $trail-b1) isa control-decision-affects-trail;
+
+$org-kfs isa organization, has name "산림청";
+$org-fire isa organization, has name "강릉소방본부";
+$org-local isa organization, has name "강릉시청";
+
+$crew-1 isa crew, has name "대응반-1", has availability-status "가용";
+$crew-2 isa crew, has name "대응반-2", has availability-status "가용";
+$engine-1 isa engine, has name "소방차-1", has availability-status "가용";
+$engine-2 isa engine, has name "소방차-2", has availability-status "출동중";
+$aircraft-1 isa aircraft, has name "헬기-1", has availability-status "가용";
+
+$incident-1 isa fire-incident, has name "산불사건-2026-001", has detection-time 2026-05-05T12:05:00, has estimated-spread-rate 28.0;
+$incident-2 isa fire-incident, has name "산불사건-2026-002", has detection-time 2026-05-05T12:20:00, has estimated-spread-rate 40.0;
+(incident: $incident-1, zone: $zone-bravo) isa incident-occurred-in-zone;
+(incident: $incident-2, zone: $zone-charlie) isa incident-occurred-in-zone;
+
+$dispatch-1 isa dispatch-decision, has recorded-at 2026-05-05T12:10:00;
+(dispatch: $dispatch-1, incident: $incident-1) isa dispatch-for-incident;
+(dispatch: $dispatch-1, assigned-crew: $crew-1) isa dispatch-assigns-crew;
+(dispatch: $dispatch-1, assigned-engine: $engine-1) isa dispatch-assigns-engine;
+(dispatch: $dispatch-1, assigned-aircraft: $aircraft-1) isa dispatch-assigns-aircraft;
+
+$cmd-1 isa incident-command, has recorded-at 2026-05-05T12:12:00;
+(command: $cmd-1, incident: $incident-1) isa incident-command-for-incident;
+(command: $cmd-1, leader: $org-fire) isa incident-command-led-by-organization;
+
+$req-1 isa resource-request, has recorded-at 2026-05-05T12:13:00, has resource-kind "인력", has resource-quantity 1;
+(request: $req-1, incident: $incident-1) isa resource-request-for-incident;
+(request: $req-1, requester: $org-fire) isa resource-requested-by;
+(request: $req-1, provider: $org-kfs) isa resource-fulfilled-by;
+
+$haz-1 isa hazard-zone, has hazard-type "역풍-급경사";
+(hazard: $haz-1, incident: $incident-1) isa hazard-zone-for-incident;
+
+$line-r1 isa control-line, has name "철수선-R1";
+$line-d1 isa control-line, has name "방어선-D1";
+$retreat-1 isa retreat-plan, has recorded-at 2026-05-05T12:25:00;
+(plan: $retreat-1, incident: $incident-1) isa retreat-plan-for-incident;
+(plan: $retreat-1, retreat-line: $line-r1) isa retreat-plan-uses-retreat-line;
+(plan: $retreat-1, defense-line: $line-d1) isa retreat-plan-uses-defense-line;
+
+$period-1 isa operational-period, has start-time 2026-05-05T18:00:00, has end-time 2026-05-06T06:00:00, has tactic-mode "야간-방어", has visibility-level "낮음", has fatigue-level "높음";
+(period: $period-1, incident: $incident-1) isa operational-period-for-incident;
+$switch-1 isa tactic-switch-decision, has recorded-at 2026-05-05T17:30:00, has tactic-mode "야간-방어";
+(switch-decision: $switch-1, period: $period-1) isa tactic-switch-for-period;
+
+$evac-1 isa evacuation-decision, has recorded-at 2026-05-05T12:30:00, has alert-level "주의";
+(decision: $evac-1, incident: $incident-1) isa evacuation-decision-for-incident;
+(decision: $evac-1, settlement-role: $settlement-s1) isa evacuation-targets-settlement;
+(decision: $evac-1, facility: $facility-f1) isa evacuation-targets-facility;
+
+$contain-1 isa containment-status, has recorded-at 2026-05-05T20:00:00, has contained-percent 78.0, has hotspot-count 4;
+(status: $contain-1, incident: $incident-1) isa containment-status-for-incident;
+$patrol-1 isa patrol-plan, has recorded-at 2026-05-05T21:00:00, has patrol-cycle-hours 3;
+(plan: $patrol-1, incident: $incident-1) isa patrol-plan-for-incident;
+
+$prevent-1 isa prevention-action, has recorded-at 2026-05-06T09:00:00, has action-type "연료차단선-정비";
+$prevent-2 isa prevention-action, has recorded-at 2026-05-06T09:10:00, has action-type "순찰-강화";
+(action: $prevent-1, zone: $zone-bravo) isa prevention-action-targets-zone;
+(action: $prevent-2, zone: $zone-charlie) isa prevention-action-targets-zone;
+(action: $prevent-1, organization-role: $org-kfs) isa prevention-action-assigned-to-organization;
+(action: $prevent-2, organization-role: $org-local) isa prevention-action-assigned-to-organization;
+
+$report-1 isa post-incident-report, has recorded-at 2026-05-07T10:00:00, has cause-type "인적-부주의", has burned-area-ha 142.5, has property-loss-krw 120000000, has injury-count 2;
+(report: $report-1, incident: $incident-1) isa post-incident-report-for-incident;
+$recommend-1 isa policy-recommendation, has recorded-at 2026-05-07T10:10:00;
+(recommendation: $recommend-1, report: $report-1) isa policy-recommendation-derived-from-report;

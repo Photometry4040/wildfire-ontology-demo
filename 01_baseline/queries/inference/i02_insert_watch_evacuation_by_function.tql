@@ -1,0 +1,6 @@
+match
+  let $incident, $settlement in watch_targets();
+insert
+  $decision isa evacuation-decision, has alert-level "주의";
+  (decision: $decision, incident: $incident) isa evacuation-decision-for-incident;
+  (decision: $decision, settlement-role: $settlement) isa evacuation-targets-settlement;

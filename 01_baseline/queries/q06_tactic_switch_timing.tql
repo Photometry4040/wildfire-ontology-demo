@@ -1,0 +1,7 @@
+match
+$incident isa fire-incident, has name $incident-name;
+$period isa operational-period, has start-time $start, has end-time $end, has tactic-mode $mode, has visibility-level $visibility, has fatigue-level $fatigue;
+(period: $period, incident: $incident) isa operational-period-for-incident;
+$switch isa tactic-switch-decision, has recorded-at $switched-at, has tactic-mode $switch-mode;
+(switch-decision: $switch, period: $period) isa tactic-switch-for-period;
+select $incident-name, $start, $end, $mode, $visibility, $fatigue, $switched-at, $switch-mode;

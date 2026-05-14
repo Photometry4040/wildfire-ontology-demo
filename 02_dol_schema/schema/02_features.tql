@@ -1,0 +1,27 @@
+# 02_features.tql
+# 역할: Feature 함수 3개 + fire-risk-level-score 속성 추가
+# 출처: 05_feature-contract.md, 06_decision-logic.md §Feature Formulas
+# 문법: TypeDB 3.x — scalar 반환은 return max($v) 사용
+
+define
+
+  # fire-risk-level-score: Python이 max(grade_score, index_score) 계산 후 저장
+  attribute fire-risk-level-score, value double;
+  pre-watering-segment owns fire-risk-level-score;
+
+  # [1] FireRiskLevel — 05_feature-contract.md §FireRiskLevelFeature
+  fun fire_risk_level_score($seg: pre-watering-segment) -> double:
+    match $seg has fire-risk-level-score $v;
+    return max($v);
+
+  # [2] ResidentialExposure — 05_feature-contract.md §ResidentialExposureFeature
+  # F = 0.40*norm(population) + 0.20*norm(household) + 0.15*norm(building) + 0.25*inv(norm(distance))
+  fun residential_exposure_score($seg: pre-watering-segment) -> double:
+    match $seg has residential-exposure-score $v;
+    return max($v);
+
+  # [3] WindTowardAsset — 05_feature-contract.md §WindTowardAssetFeature
+  # F = 0.45*toward_flag*norm(WSD) + 0.25*gust_flag*norm(GST) + 0.30*norm(WSD)
+  fun wind_toward_asset_score($seg: pre-watering-segment) -> double:
+    match $seg has wind-toward-asset-score $v;
+    return max($v);

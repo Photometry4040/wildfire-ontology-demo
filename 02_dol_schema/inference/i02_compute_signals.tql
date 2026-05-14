@@ -1,0 +1,18 @@
+# i02_compute_signals.tql
+# 역할: 저장된 Signal 점수 → signal-record INSERT
+# 실행: write 트랜잭션 (load_dol.py STEP 5)
+
+match
+  $seg isa pre-watering-segment;
+  $seg has s-official-score $s_off;
+  $seg has residential-exposure-score $s_exp;
+insert
+  $sr1 isa signal-record,
+    has signal-kind "S_official",
+    has signal-score $s_off;
+  (subject: $seg, result: $sr1) isa segment-signal;
+
+  $sr2 isa signal-record,
+    has signal-kind "S_exposure",
+    has signal-score $s_exp;
+  (subject: $seg, result: $sr2) isa segment-signal;

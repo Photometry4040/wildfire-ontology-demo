@@ -1,0 +1,58 @@
+# prediction.tql
+# 역할: 김O솔 RF 모델 출력 mock — Feature/Signal 사전 계산 점수를 segment에 추가
+# 출처: 구조는 김O학 DOL 그대로, 값은 시연용 mock
+# 발표 멘트: "예측 DB(RF 모델) 출력이 DOL 추론 엔진에 입력되는 지점"
+#
+# 각 점수 산출 근거:
+#   fire-risk-level-score = max(grade_score, index_score)
+#     grade_score: {낮음:0.20, 높음:0.75, 매우높음:1.00}
+#     index_score: piecewise_linear(index, [(0,0.00),(50,0.20),(65,0.55),(85,0.75),(100,1.00)])
+#   s-official-score = 0.40·F_level + 0.20·F_trend(0.5) + 0.40·F_alert
+#     F_alert: {없음:0.0, 주의보:0.6, 경보:1.0}
+#
+# S_priority 검증 (06_decision-logic.md §Signal Formulas):
+#   SEG-GJ-A: 0.20·0.18 + 0.25·0.15 + 0.20·0.20 + 0.20·0.40 + 0.15·0.25 = 0.231 → EnhancedMonitoring
+#   SEG-GJ-B: 0.20·0.40 + 0.25·0.50 + 0.20·0.45 + 0.20·0.55 + 0.15·0.45 = 0.473 → ReviewPreWatering
+#   SEG-JN-C: 0.20·0.50 + 0.25·0.35 + 0.20·0.55 + 0.20·0.45 + 0.15·0.50 = 0.463 → ReviewPreWatering
+#             → GradeSevere(risk-grade=매우높음, index=88≥86) 발동 → PriorityPreWatering 격상
+
+# ─── SEG-GJ-A: 광주 북구 — 저위험 ───
+# fire-risk-level-score: max(grade:낮음→0.20, index:30→0.12) = 0.20
+# s-official-score: 0.40*0.20 + 0.20*0.5 + 0.40*0.0 = 0.18
+match $a isa pre-watering-segment, has segment-id "SEG-GJ-A";
+insert
+  $a has fire-risk-level-score 0.20,
+     has residential-exposure-score 0.15,
+     has wind-toward-asset-score 0.20,
+     has s-official-score 0.18,
+     has s-spread-mock 0.20,
+     has s-action-mock 0.40,
+     has s-time-mock 0.25;
+
+# ─── SEG-GJ-B: 광주 서구 — 중위험 ───
+# fire-risk-level-score: max(grade:높음→0.75, index:70→0.60) = 0.75
+# s-official-score: 0.40*0.75 + 0.20*0.5 + 0.40*0.0 = 0.40
+match $b isa pre-watering-segment, has segment-id "SEG-GJ-B";
+insert
+  $b has fire-risk-level-score 0.75,
+     has residential-exposure-score 0.50,
+     has wind-toward-asset-score 0.45,
+     has s-official-score 0.40,
+     has s-spread-mock 0.45,
+     has s-action-mock 0.55,
+     has s-time-mock 0.45;
+
+# ─── SEG-JN-C: 전남 담양 — GradeSevere override 시연 ───
+# fire-risk-level-score: max(grade:매우높음→1.00, index:88→0.80) = 1.00
+# s-official-score: 0.40*1.00 + 0.20*0.5 + 0.40*0.0 = 0.50 (alert 없음)
+# S_priority 기본값 ≈ 0.463 → ReviewPreWatering
+# GradeSevere 발동 (risk-grade=매우높음, risk-index=88≥86) → PriorityPreWatering 격상
+match $c isa pre-watering-segment, has segment-id "SEG-JN-C";
+insert
+  $c has fire-risk-level-score 1.00,
+     has residential-exposure-score 0.35,
+     has wind-toward-asset-score 0.65,
+     has s-official-score 0.50,
+     has s-spread-mock 0.55,
+     has s-action-mock 0.45,
+     has s-time-mock 0.50;

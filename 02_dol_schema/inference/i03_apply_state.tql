@@ -1,0 +1,73 @@
+# i03_apply_state.tql
+# 역할: S_priority 계산 + Override 적용 → decision-state 엔티티 INSERT
+# 출처: 03_signals.tql의 compute_s_priority(), 04_overrides.tql의 is_hazard_gate(), is_grade_severe()
+# 실행: load_dol.py가 아래 3개 쿼리를 순서대로 별도 write 트랜잭션으로 실행
+#
+# Override 적용 순서 (06_decision-logic.md §State Transition):
+#   Query 1: HazardGate (순위 1) — hazard-flag = true → NotActionable
+#   Query 2: GradeSevere (순위 8) — 매우높음 / index≥86, sp < 0.60 → PriorityPreWatering
+#   Query 3: Default — 나머지 구간, S_priority 기반 5 Band 결정
+#
+# 주의: 멱등성 없음 — load_dol.py는 매 실행마다 DB를 드롭·재생성하여 중복 방지
+
+# ═══════════════════════════════════════════════════════
+# Query 1: HazardGate Override (순위 1)
+# 조건: hazard-flag = true → NotActionable (완료 구간도 재차단)
+# 발표: "안전 위험 구간은 S_priority와 무관하게 즉시 차단"
+# ═══════════════════════════════════════════════════════
+match
+  $seg isa pre-watering-segment, has hazard-flag true;
+  let $sp = compute_s_priority($seg);
+insert
+  $ds isa decision-state,
+    has state-band "NotActionable",
+    has s-priority $sp,
+    has override-applied "HazardGate";
+  (subject: $seg, outcome: $ds) isa segment-decision;
+
+# ═══════════════════════════════════════════════════════
+# Query 2: GradeSevere Override (순위 8)
+# 조건: hazard-flag = false + (risk-grade=매우높음 or risk-index≥86) + sp < 0.60
+# → 최소 PriorityPreWatering 격상
+# 발표: "산림청 매우높음 등급은 DB 안에서 자동으로 우선순위를 올림"
+# SEG-JN-C 해당: sp ≈ 0.463 → PriorityPreWatering 격상
+# ═══════════════════════════════════════════════════════
+match
+  $seg isa pre-watering-segment, has hazard-flag false;
+  { $seg has risk-grade "매우높음"; } or { $seg has risk-index $idx; $idx >= 86.0; };
+  let $sp = compute_s_priority($seg);
+  $sp < 0.60;
+insert
+  $ds isa decision-state,
+    has state-band "PriorityPreWatering",
+    has s-priority $sp,
+    has override-applied "GradeSevere";
+  (subject: $seg, outcome: $ds) isa segment-decision;
+
+# ═══════════════════════════════════════════════════════
+# Query 3: Default — S_priority 기반 5 Band
+# 조건: hazard-flag = false + GradeSevere 미해당 구간
+# (HazardGate·GradeSevere 해당 구간은 이미 decision-state 보유)
+# ═══════════════════════════════════════════════════════
+match
+  $seg isa pre-watering-segment, has hazard-flag false;
+  not {
+    { $seg has risk-grade "매우높음"; } or { $seg has risk-index $idx; $idx >= 86.0; };
+  };
+  not { (subject: $seg, outcome: $ds) isa segment-decision; };
+  let $sp = compute_s_priority($seg);
+insert
+  $ds2 isa decision-state,
+    has state-band "pending",
+    has s-priority $sp,
+    has override-applied "none";
+  (subject: $seg, outcome: $ds2) isa segment-decision;
+
+# ─── 주: State Band 최종 매핑은 load_dol.py Python에서 수행 ───
+# TypeDB 3.x fun의 string 반환 분기 한계로 인해
+# Python이 s-priority 값을 읽고 state-band를 업데이트함:
+#   sp < 0.20  → GeneralManagement
+#   sp < 0.40  → EnhancedMonitoring
+#   sp < 0.60  → ReviewPreWatering
+#   sp < 0.80  → PriorityPreWatering
+#   sp >= 0.80 → ImmediatePreWatering

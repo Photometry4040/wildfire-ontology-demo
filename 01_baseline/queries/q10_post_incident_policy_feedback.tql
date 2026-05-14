@@ -1,0 +1,7 @@
+match
+$incident isa fire-incident, has name $incident-name;
+$report isa post-incident-report, has cause-type $cause, has burned-area-ha $burned-ha, has property-loss-krw $loss, has injury-count $injury, has recorded-at $report-at;
+(report: $report, incident: $incident) isa post-incident-report-for-incident;
+$recommendation isa policy-recommendation, has recorded-at $recommendation-at;
+(recommendation: $recommendation, report: $report) isa policy-recommendation-derived-from-report;
+select $incident-name, $cause, $burned-ha, $loss, $injury, $report-at, $recommendation-at;

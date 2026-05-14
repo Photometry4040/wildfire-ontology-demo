@@ -1,0 +1,11 @@
+match
+  $dispatch isa dispatch-decision, has recorded-at 2026-05-05T12:40:00;
+  $incident isa fire-incident, has name $incident-name;
+  $crew isa crew, has name $crew-name;
+  $engine isa engine, has name $engine-name;
+  $aircraft isa aircraft, has name $aircraft-name;
+  (dispatch: $dispatch, incident: $incident) isa dispatch-for-incident;
+  (dispatch: $dispatch, assigned-crew: $crew) isa dispatch-assigns-crew;
+  (dispatch: $dispatch, assigned-engine: $engine) isa dispatch-assigns-engine;
+  (dispatch: $dispatch, assigned-aircraft: $aircraft) isa dispatch-assigns-aircraft;
+select $incident-name, $crew-name, $engine-name, $aircraft-name;

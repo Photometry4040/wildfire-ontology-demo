@@ -1,0 +1,48 @@
+# sources.tql
+# 역할: 광주·전남 예비주수 구간 3개 기본 데이터 삽입
+# 출처: 구조는 김O학 DOL 그대로, 값은 시연용 mock
+# 발표 멘트: "광주 북구·서구, 전남 담양군 3개 구간 — 저/중/고위험 시나리오"
+#
+# 시나리오 설계:
+#   SEG-GJ-A (광주 북구): 낮은 위험등급 → EnhancedMonitoring
+#   SEG-GJ-B (광주 서구): 높은 위험등급 → ReviewPreWatering
+#   SEG-JN-C (전남 담양): 매우높음 등급 → PriorityPreWatering (GradeSevere override)
+
+insert
+
+  # ─── Segment A: 광주 북구 — 저위험 ───
+  # risk-grade 낮음: grade_score = 0.20
+  # large-fire-alert 없음: f_alert = 0.0
+  # S_official ≈ 0.18 → S_priority ≈ 0.23 → EnhancedMonitoring
+  $seg-a isa pre-watering-segment,
+    has segment-id "SEG-GJ-A",
+    has segment-name "광주 북구 무등산 A구간",
+    has risk-grade "낮음",
+    has risk-index 30.0,
+    has large-fire-alert "없음",
+    has hazard-flag false;
+
+  # ─── Segment B: 광주 서구 — 중위험 ───
+  # risk-grade 높음: grade_score = 0.75
+  # large-fire-alert 없음: f_alert = 0.0
+  # S_official ≈ 0.40 → S_priority ≈ 0.47 → ReviewPreWatering
+  $seg-b isa pre-watering-segment,
+    has segment-id "SEG-GJ-B",
+    has segment-name "광주 서구 어등산 B구간",
+    has risk-grade "높음",
+    has risk-index 70.0,
+    has large-fire-alert "없음",
+    has hazard-flag false;
+
+  # ─── Segment C: 전남 담양 — 고위험 (GradeSevere override) ───
+  # risk-grade 매우높음 + risk-index 88.0 (≥86) → GradeSevere 발동
+  # 기본 S_priority ≈ 0.46 (ReviewPreWatering 구간)
+  # GradeSevere: 최소 PriorityPreWatering로 격상
+  # 발표 시연: "DB 안의 Override 로직이 자동으로 등급을 올림"
+  $seg-c isa pre-watering-segment,
+    has segment-id "SEG-JN-C",
+    has segment-name "전남 담양군 추월산 C구간",
+    has risk-grade "매우높음",
+    has risk-index 88.0,
+    has large-fire-alert "없음",
+    has hazard-flag false;

@@ -1,0 +1,9 @@
+match
+$action isa prevention-action, has action-type $action-type, has recorded-at $at;
+$zone isa forest-zone, has name $zone-name;
+(action: $action, zone: $zone) isa prevention-action-targets-zone;
+$org isa organization, has name $org-name;
+(action: $action, organization-role: $org) isa prevention-action-assigned-to-organization;
+$assessment isa risk-assessment, has risk-level $risk-level;
+(assessment: $assessment, zone: $zone) isa risk-assessment-for-zone;
+select $zone-name, $risk-level, $action-type, $org-name, $at;

@@ -1,0 +1,36 @@
+# 04_overrides.tql
+# 역할: State 조회 함수 + 고위험 구간 스트림 함수
+# 출처: 06_decision-logic.md §State Transition
+# 문법: TypeDB 3.x fun
+#
+# Override 판정(HazardGate, GradeSevere)은 Python(load_dol.py)에서 수행
+# TypeDB 3.x: boolean은 max/sum 미지원 → Python 위임
+# TypeDB 3.x: string은 max()로 조회 가능
+
+define
+
+  # 저장된 최종 State 조회 (v01 lineage 검증, FastAPI 백엔드용)
+  fun active_state($seg: pre-watering-segment) -> string:
+    match
+      (subject: $seg, outcome: $ds) isa segment-decision;
+      $ds has state-band $v;
+    return max($v);
+
+  # 저장된 S_priority 조회 (FastAPI 백엔드용)
+  fun stored_s_priority($seg: pre-watering-segment) -> double:
+    match
+      (subject: $seg, outcome: $ds) isa segment-decision;
+      $ds has s-priority $v;
+    return max($v);
+
+  # 고위험 구간 스트림 — ReviewPreWatering 이상
+  # 발표 질문 "어느 구간을 먼저?" 에 답하는 핵심 함수
+  fun actionable_segments() -> { pre-watering-segment }:
+    match
+      $seg isa pre-watering-segment;
+      (subject: $seg, outcome: $ds) isa segment-decision;
+      $ds has state-band $band;
+      { $band == "ReviewPreWatering"; }
+      or { $band == "PriorityPreWatering"; }
+      or { $band == "ImmediatePreWatering"; };
+    return { $seg };

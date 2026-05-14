@@ -1,0 +1,5 @@
+match
+  let $incident, $report in incidents_with_post_report();
+insert
+  $recommendation isa policy-recommendation, has recorded-at 2026-05-07T10:30:00;
+  (recommendation: $recommendation, report: $report) isa policy-recommendation-derived-from-report;

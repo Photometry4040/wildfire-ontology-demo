@@ -1,0 +1,11 @@
+match
+$incident isa fire-incident, has name $incident-name, has estimated-spread-rate $spread-rate, has detection-time $detected-at;
+$dispatch isa dispatch-decision, has recorded-at $dispatch-at;
+(dispatch: $dispatch, incident: $incident) isa dispatch-for-incident;
+$crew isa crew, has name $crew-name;
+(dispatch: $dispatch, assigned-crew: $crew) isa dispatch-assigns-crew;
+$engine isa engine, has name $engine-name;
+(dispatch: $dispatch, assigned-engine: $engine) isa dispatch-assigns-engine;
+$aircraft isa aircraft, has name $aircraft-name;
+(dispatch: $dispatch, assigned-aircraft: $aircraft) isa dispatch-assigns-aircraft;
+select $incident-name, $spread-rate, $detected-at, $dispatch-at, $crew-name, $engine-name, $aircraft-name;

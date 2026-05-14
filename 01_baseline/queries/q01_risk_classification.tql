@@ -1,0 +1,5 @@
+match
+$zone isa forest-zone, has name $zone-name;
+$assessment isa risk-assessment, has risk-level $risk-level, has risk-index-value $risk-index, has recorded-at $at;
+(assessment: $assessment, zone: $zone) isa risk-assessment-for-zone;
+select $zone-name, $risk-level, $risk-index, $at;

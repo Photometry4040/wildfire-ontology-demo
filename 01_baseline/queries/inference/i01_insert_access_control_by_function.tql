@@ -1,0 +1,5 @@
+match
+  let $zone in high_risk_zones();
+insert
+  $decision isa control-decision, has action-type "출입통제-필요";
+  (decision: $decision, zone: $zone) isa control-decision-for-zone;

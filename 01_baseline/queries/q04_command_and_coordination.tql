@@ -1,0 +1,13 @@
+match
+$incident isa fire-incident, has name $incident-name;
+$command isa incident-command, has recorded-at $command-at;
+(command: $command, incident: $incident) isa incident-command-for-incident;
+$leader isa organization, has name $leader-name;
+(command: $command, leader: $leader) isa incident-command-led-by-organization;
+$request isa resource-request, has resource-kind $kind, has resource-quantity $qty;
+(request: $request, incident: $incident) isa resource-request-for-incident;
+$requester isa organization, has name $requester-name;
+(request: $request, requester: $requester) isa resource-requested-by;
+$provider isa organization, has name $provider-name;
+(request: $request, provider: $provider) isa resource-fulfilled-by;
+select $incident-name, $command-at, $leader-name, $kind, $qty, $requester-name, $provider-name;

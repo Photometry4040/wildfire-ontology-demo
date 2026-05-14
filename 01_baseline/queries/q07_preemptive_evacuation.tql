@@ -1,0 +1,7 @@
+match
+$incident isa fire-incident, has name $incident-name;
+$decision isa evacuation-decision, has recorded-at $at, has alert-level $alert-level;
+(decision: $decision, incident: $incident) isa evacuation-decision-for-incident;
+$settlement isa settlement, has name $settlement-name;
+(decision: $decision, settlement-role: $settlement) isa evacuation-targets-settlement;
+select $incident-name, $at, $alert-level, $settlement-name;

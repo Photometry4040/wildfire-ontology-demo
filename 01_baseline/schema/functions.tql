@@ -1,0 +1,53 @@
+define
+
+# CQ01/CQ02/CQ09: 고위험 구역 선별(예방/통제 재사용)
+fun high_risk_zones() -> { forest-zone }:
+  match
+    $zone isa forest-zone;
+    $assessment isa risk-assessment, has risk-level "높음";
+    (assessment: $assessment, zone: $zone) isa risk-assessment-for-zone;
+  return { $zone };
+
+# CQ07: 사건-인접 정착지 선별(대피 경보 대상 재사용)
+fun watch_targets() -> { fire-incident, settlement }:
+  match
+    $incident isa fire-incident;
+    $zone isa forest-zone;
+    (incident: $incident, zone: $zone) isa incident-occurred-in-zone;
+    $settlement isa settlement;
+    (settlement-role: $settlement, zone: $zone) isa settlement-adjacent-to-zone;
+  return { $incident, $settlement };
+
+# CQ03: 출동 판단에 쓰는 가용 자원 선별
+fun ready_crews() -> { crew }:
+  match
+    $crew isa crew, has availability-status "가용";
+  return { $crew };
+
+fun ready_engines() -> { engine }:
+  match
+    $engine isa engine, has availability-status "가용";
+  return { $engine };
+
+fun ready_aircraft() -> { aircraft }:
+  match
+    $aircraft isa aircraft, has availability-status "가용";
+  return { $aircraft };
+
+# CQ08: 진화가 아직 완전히 종료되지 않은 사건 선별
+fun incidents_requiring_patrol() -> { fire-incident }:
+  match
+    $incident isa fire-incident;
+    $status isa containment-status;
+    (status: $status, incident: $incident) isa containment-status-for-incident;
+    $status has hotspot-count $hotspot;
+    $hotspot > 0;
+  return { $incident };
+
+# CQ10: 사후 보고가 등록된 사건 선별(정책 피드백 입력)
+fun incidents_with_post_report() -> { fire-incident, post-incident-report }:
+  match
+    $incident isa fire-incident;
+    $report isa post-incident-report;
+    (report: $report, incident: $incident) isa post-incident-report-for-incident;
+  return { $incident, $report };

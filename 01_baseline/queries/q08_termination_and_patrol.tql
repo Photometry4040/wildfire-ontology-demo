@@ -1,0 +1,7 @@
+match
+$incident isa fire-incident, has name $incident-name;
+$status isa containment-status, has contained-percent $contained, has hotspot-count $hotspot, has recorded-at $status-at;
+(status: $status, incident: $incident) isa containment-status-for-incident;
+$patrol isa patrol-plan, has patrol-cycle-hours $cycle-hours, has recorded-at $patrol-at;
+(plan: $patrol, incident: $incident) isa patrol-plan-for-incident;
+select $incident-name, $contained, $hotspot, $status-at, $cycle-hours, $patrol-at;

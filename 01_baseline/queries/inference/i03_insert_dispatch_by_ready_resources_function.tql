@@ -1,0 +1,11 @@
+match
+  $incident isa fire-incident;
+  let $crew in ready_crews();
+  let $engine in ready_engines();
+  let $aircraft in ready_aircraft();
+insert
+  $dispatch isa dispatch-decision, has recorded-at 2026-05-05T12:40:00;
+  (dispatch: $dispatch, incident: $incident) isa dispatch-for-incident;
+  (dispatch: $dispatch, assigned-crew: $crew) isa dispatch-assigns-crew;
+  (dispatch: $dispatch, assigned-engine: $engine) isa dispatch-assigns-engine;
+  (dispatch: $dispatch, assigned-aircraft: $aircraft) isa dispatch-assigns-aircraft;

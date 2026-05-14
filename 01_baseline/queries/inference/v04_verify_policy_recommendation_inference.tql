@@ -1,0 +1,7 @@
+match
+  $recommendation isa policy-recommendation, has recorded-at 2026-05-07T10:30:00;
+  $report isa post-incident-report, has recorded-at $report-at;
+  $incident isa fire-incident, has name $incident-name;
+  (recommendation: $recommendation, report: $report) isa policy-recommendation-derived-from-report;
+  (report: $report, incident: $incident) isa post-incident-report-for-incident;
+select $incident-name, $report-at;

@@ -1,0 +1,27 @@
+# i01_compute_features.tql
+# 역할: 저장된 Feature 점수 → feature-record INSERT
+# 실행: write 트랜잭션 (load_dol.py STEP 4)
+
+match
+  $seg isa pre-watering-segment;
+  $seg has fire-risk-level-score $fl;
+  $seg has residential-exposure-score $re;
+  $seg has wind-toward-asset-score $wa;
+insert
+  $fr1 isa feature-record,
+    has feature-kind "FireRiskLevel",
+    has feature-score $fl,
+    has feature-class "official-risk";
+  (subject: $seg, result: $fr1) isa segment-feature;
+
+  $fr2 isa feature-record,
+    has feature-kind "ResidentialExposure",
+    has feature-score $re,
+    has feature-class "exposure";
+  (subject: $seg, result: $fr2) isa segment-feature;
+
+  $fr3 isa feature-record,
+    has feature-kind "WindTowardAsset",
+    has feature-score $wa,
+    has feature-class "spread";
+  (subject: $seg, result: $fr3) isa segment-feature;

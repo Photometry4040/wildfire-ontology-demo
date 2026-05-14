@@ -1,0 +1,69 @@
+# 01_entities.tql
+# 역할: DOL 구조 엔티티·속성·관계 스키마
+# 출처: 05_feature-contract.md, 06_decision-logic.md
+# 문법: TypeDB 3.x (attribute/entity/relation 키워드, sub 없음)
+
+define
+
+  # ─── 속성 ───
+  attribute segment-id, value string;
+  attribute segment-name, value string;
+  attribute hazard-flag, value boolean;
+  attribute risk-grade, value string;
+  attribute risk-index, value double;
+  attribute large-fire-alert, value string;
+  attribute residential-exposure-score, value double;
+  attribute wind-toward-asset-score, value double;
+  attribute s-spread-mock, value double;
+  attribute s-action-mock, value double;
+  attribute s-time-mock, value double;
+  attribute feature-kind, value string;
+  attribute feature-score, value double;
+  attribute feature-class, value string;
+  attribute signal-kind, value string;
+  attribute signal-score, value double;
+  attribute state-band, value string;
+  attribute s-priority, value double;
+  attribute override-applied, value string;
+
+  # ─── 엔티티 ───
+  entity pre-watering-segment,
+    owns segment-id @key,
+    owns segment-name,
+    owns hazard-flag,
+    owns risk-grade,
+    owns risk-index,
+    owns large-fire-alert,
+    owns residential-exposure-score,
+    owns wind-toward-asset-score,
+    owns s-spread-mock,
+    owns s-action-mock,
+    owns s-time-mock;
+
+  entity feature-record,
+    owns feature-kind,
+    owns feature-score,
+    owns feature-class;
+
+  entity signal-record,
+    owns signal-kind,
+    owns signal-score;
+
+  entity decision-state,
+    owns state-band,
+    owns s-priority,
+    owns override-applied;
+
+  # ─── 관계 ───
+  relation segment-feature, relates subject, relates result;
+  relation segment-signal, relates subject, relates result;
+  relation segment-decision, relates subject, relates outcome;
+
+  pre-watering-segment plays segment-feature:subject;
+  feature-record plays segment-feature:result;
+
+  pre-watering-segment plays segment-signal:subject;
+  signal-record plays segment-signal:result;
+
+  pre-watering-segment plays segment-decision:subject;
+  decision-state plays segment-decision:outcome;

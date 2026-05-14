@@ -1,0 +1,29 @@
+# 03_signals.tql
+# 역할: Signal 함수 + S_priority 산술 계산 함수
+# 출처: 06_decision-logic.md §Signal Formulas
+# 문법: TypeDB 3.x — scalar 반환은 return max($v) 또는 return sum($expr)
+#
+# S_priority = 0.20·S_official + 0.25·S_exposure + 0.20·S_spread
+#            + 0.20·S_action   + 0.15·S_time
+# exposure(0.25) 최대 가중치 → "보호 대상 우선" 철학
+
+define
+
+  # Python이 S_official = 0.40·F_level + 0.20·F_trend(0.5) + 0.40·F_alert 계산 후 저장
+  attribute s-official-score, value double;
+  pre-watering-segment owns s-official-score;
+
+  # S_official 조회
+  fun compute_s_official($seg: pre-watering-segment) -> double:
+    match $seg has s-official-score $v;
+    return max($v);
+
+  # S_exposure 조회 (DEMO: F_residential 단일 대표값)
+  fun compute_s_exposure($seg: pre-watering-segment) -> double:
+    match $seg has residential-exposure-score $v;
+    return max($v);
+
+  # S_priority 가중평균: Python(load_dol.py)에서 계산
+  # TypeDB 3.x fun은 다중 변수 산술식 반환 미지원 → Python 위임
+  # 수식: 0.20·S_official + 0.25·S_exposure + 0.20·S_spread + 0.20·S_action + 0.15·S_time
+  # 결과는 decision-state.s-priority 속성으로 저장됨

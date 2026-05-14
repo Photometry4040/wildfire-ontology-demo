@@ -1,0 +1,7 @@
+match
+$decision isa control-decision, has action-type $action, has start-time $start, has end-time $end;
+$zone isa forest-zone, has name $zone-name;
+(decision: $decision, zone: $zone) isa control-decision-for-zone;
+$trail isa trail, has name $trail-name;
+(decision: $decision, trail-role: $trail) isa control-decision-affects-trail;
+select $zone-name, $trail-name, $action, $start, $end;

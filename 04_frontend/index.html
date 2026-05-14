@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DOL 추론 엔진 — 광주·전남 예비주수</title>
+
+  <!-- ── 기본 메타 ── -->
+  <meta name="description" content="광주·전남 예비주수 구간의 우선순위를 BeAWARE 기반 DOL 추론 엔진으로 계산합니다. S_priority 점수 · 5-State 분류 · 9가지 Override · Decision Lineage 역추적." />
+  <meta name="keywords" content="예비주수, DOL, 산불, 온톨로지, TypeDB, 추론 엔진, 광주, 전남" />
+  <!-- ── Open Graph ── -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:title"       content="DOL 추론 엔진" />
+  <meta property="og:description" content="광주·전남 예비주수 DOL — BeAWARE 추상 온톨로지를 운영 의사결정 엔진으로 변환" />
+  <meta property="og:locale"      content="ko_KR" />
+
+  <!-- ── 파비콘 (인라인 SVG) ── -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230f172a'/><text y='24' x='4' font-size='22'>🔥</text></svg>" />
+
+  <script src="https://unpkg.com/vis-network@9.1.9/standalone/umd/vis-network.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"></script>
+</head>
+<body class="min-h-screen">
+
+<!-- ── 헤더 ── -->
+<header class="sticky top-0 z-20 border-b border-slate-700" style="background:#0f172a;">
+  <div class="max-w-7xl mx-auto px-5 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="text-xl font-bold tracking-tight text-sky-400">DOL 추론 엔진</div>
+      <div class="text-slate-400 text-sm">광주·전남 예비주수 추론 엔진</div>
+      <span id="health-badge"
+            class="text-xs px-2 py-0.5 rounded-full bg-slate-700 text-slate-400">
+        연결 확인 중…
+      </span>
+    </div>
+    <!-- 탭 버튼 -->
+    <nav class="flex items-center gap-1">
+      <button id="tab-btn-segments"     class="tab-btn" data-tab="segments"     title="구간 분석 (⌘1)">📊 구간 분석</button>
+      <button id="tab-btn-pipeline"     class="tab-btn" data-tab="pipeline"     title="추론 파이프라인 (⌘2)">🔄 추론 파이프라인</button>
+      <button id="tab-btn-architecture" class="tab-btn" data-tab="architecture" title="데이터 아키텍처 (⌘3)">🕸️ 데이터 아키텍처</button>
+      <button id="tab-btn-briefing"     class="tab-btn" data-tab="briefing"     title="브리핑 (⌘4)">🔥 브리핑</button>
+    </nav>
+    <button id="btn-inference"
+            class="px-4 py-1.5 rounded-lg text-sm font-semibold
+                   bg-sky-600 hover:bg-sky-500 active:bg-sky-700
+                   transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+      추론 재실행
+    </button>
+  </div>
+</header>
+
+<!-- ── 본문 ── -->
+<main class="max-w-7xl mx-auto px-5 py-5" style="min-height: calc(100vh - 56px);">
+
+  <!-- ── Tab 1: 구간 분석 ── -->
+  <div id="tab-panel-segments" class="tab-panel flex gap-5">
+
+    <!-- 왼쪽: 구간 목록 -->
+    <section class="w-72 flex-shrink-0">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-sm font-semibold text-slate-300 uppercase tracking-wider">구간 목록</h2>
+        <span id="seg-count" class="text-xs text-slate-500">로딩 중…</span>
+      </div>
+      <div id="segment-list" class="flex flex-col gap-2"></div>
+    </section>
+
+    <!-- 오른쪽: 구간 상세 -->
+    <section class="flex-1 min-w-0">
+
+      <!-- 구간 상세 (초기 안내) -->
+      <div id="detail-placeholder"
+           class="flex items-center justify-center text-slate-600 text-sm py-16">
+        왼쪽에서 구간을 선택하세요
+      </div>
+
+      <!-- 구간 상세 패널 -->
+      <div id="detail-panel" class="hidden">
+        <div class="flex items-center gap-3 mb-2">
+          <h1 id="d-name" class="text-xl font-bold"></h1>
+          <span id="d-state-badge" class="state-badge"></span>
+          <span id="d-override-badge"
+                class="hidden text-xs px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40"></span>
+        </div>
+
+        <!-- B-1: State Action 설명 -->
+        <div id="state-action-container"></div>
+
+        <!-- B-1: Status 타임라인 -->
+        <div id="status-timeline-container" class="mb-4 rounded-lg p-4" style="background:#1e293b;"></div>
+
+        <div class="grid grid-cols-4 gap-3 mb-5">
+          <div class="rounded-lg p-3" style="background:#1e293b;">
+            <div class="kv-label mb-1">우선순위 점수 (S_priority)</div>
+            <div id="d-sp" class="kv-value text-sky-400 text-lg"></div>
+          </div>
+          <div class="rounded-lg p-3" style="background:#1e293b;">
+            <div class="kv-label mb-1">위험 등급</div>
+            <div id="d-grade" class="kv-value"></div>
+          </div>
+          <div class="rounded-lg p-3" style="background:#1e293b;">
+            <div class="kv-label mb-1">위험 지수</div>
+            <div id="d-ri" class="kv-value"></div>
+          </div>
+          <div class="rounded-lg p-3" style="background:#1e293b;">
+            <div class="kv-label mb-1">위험 차단 여부</div>
+            <div id="d-hf" class="kv-value"></div>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4 mb-5">
+          <div class="rounded-lg p-4" style="background:#1e293b;">
+            <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">특징 (Feature)</div>
+            <canvas id="chart-features" height="160"></canvas>
+          </div>
+          <div class="rounded-lg p-4" style="background:#1e293b;">
+            <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">신호 (Signal)</div>
+            <canvas id="chart-signals" height="160"></canvas>
+          </div>
+        </div>
+        <div class="rounded-lg p-4 mb-5" style="background:#1e293b;">
+          <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
+            의사결정 경로
+            <span class="ml-2 text-slate-600 font-normal normal-case">
+              특징 × 신호 → 우선순위 점수 → 상태
+            </span>
+          </div>
+          <div id="lineage-loading" class="text-slate-600 text-sm py-4 text-center hidden">로딩 중…</div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="text-left text-slate-500 text-xs border-b border-slate-700">
+                  <th class="pb-2 pr-4 font-medium">특징</th>
+                  <th class="pb-2 pr-4 font-medium">특징점수</th>
+                  <th class="pb-2 pr-4 font-medium">신호</th>
+                  <th class="pb-2 pr-4 font-medium">신호점수</th>
+                  <th class="pb-2 pr-4 font-medium">우선순위</th>
+                  <th class="pb-2 font-medium">상태</th>
+                </tr>
+              </thead>
+              <tbody id="lineage-body" class="divide-y divide-slate-800"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- B-4: 함수 추론 3단계 라이브 뷰 -->
+        <div id="fn-inference-panel" class="rounded-lg p-4" style="background:#1e293b;">
+          <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
+            🔬 함수 추론 3단계
+            <span class="ml-2 text-slate-600 font-normal normal-case">
+              카드 클릭 → TypeQL 코드 보기
+            </span>
+          </div>
+          <div id="fn-inference-container">
+            <div class="text-slate-600 text-sm text-center py-6">구간을 선택하면 추론 trace가 표시됩니다.</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </div>
+
+  <!-- ── Tab 2: 추론 파이프라인 ── -->
+  <div id="tab-panel-pipeline" class="tab-panel hidden">
+
+    <!-- 파이프라인 6단계 -->
+    <section id="pipeline-panel" class="mb-5 rounded-2xl p-5 border border-slate-800" style="background:#0f172a;">
+      <div class="flex items-center gap-3 mb-4">
+        <h2 class="text-sm font-semibold text-slate-300 uppercase tracking-wider">🔄 추론 파이프라인</h2>
+        <span id="pipeline-status" class="text-xs font-mono text-slate-400">IDLE</span>
+      </div>
+      <div class="flex items-center gap-2 overflow-x-auto pb-2">
+        <div class="pipeline-node" data-node="input">
+          <div class="node-icon">📡</div>
+          <div class="node-title">예측 DB</div>
+          <div class="node-subtitle">박O수</div>
+        </div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-node" data-node="trigger">
+          <div class="node-icon">🚨</div>
+          <div class="node-title">TRIGGER</div>
+          <div class="node-subtitle">29 Source</div>
+        </div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-node" data-node="state">
+          <div class="node-icon">⚙️</div>
+          <div class="node-title">STATE</div>
+          <div class="node-subtitle">5 Signal · S_priority</div>
+        </div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-node" data-node="action">
+          <div class="node-icon">🎯</div>
+          <div class="node-title">ACTION</div>
+          <div class="node-subtitle">5 Decision Gate</div>
+        </div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-node" data-node="lineage">
+          <div class="node-icon">🔍</div>
+          <div class="node-title">LINEAGE</div>
+          <div class="node-subtitle">Audit 추적</div>
+        </div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-node" data-node="llm">
+          <div class="node-icon">💬</div>
+          <div class="node-title">LLM 변환</div>
+          <div class="node-subtitle">유O수 · Gemini</div>
+        </div>
+      </div>
+      <div id="pipeline-message" class="mt-3 text-xs text-slate-500 font-mono h-5">
+        추론 재실행 버튼을 눌러 파이프라인을 실행하세요.
+      </div>
+    </section>
+
+    <!-- B-3: 가중치 시뮬레이터 -->
+    <div class="threshold-panel mb-5">
+      <div class="threshold-header" id="threshold-header">
+        <div class="flex items-center gap-2">
+          <span class="text-sm">🎚️</span>
+          <span class="text-sm font-semibold text-slate-300">S_priority 가중치 시뮬레이터</span>
+          <span class="text-xs text-slate-600">— 가중치 조정 후 Before/After 비교</span>
+        </div>
+        <span id="threshold-chevron" class="text-slate-400 text-sm">▴</span>
+      </div>
+      <div class="threshold-body" id="threshold-body">
+        <div id="threshold-sliders"></div>
+        <div id="threshold-total" class="weight-total ok">합계: 1.00 ✓</div>
+        <div class="flex gap-2 mt-2 flex-wrap">
+          <button id="threshold-reset"
+                  class="px-3 py-1.5 rounded text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 transition-colors">
+            기본값 복원
+          </button>
+          <button id="threshold-apply"
+                  class="px-4 py-1.5 rounded text-xs font-semibold bg-sky-700 hover:bg-sky-600 text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+            ▶ Apply & 비교
+          </button>
+          <button id="threshold-monte"
+                  class="px-4 py-1.5 rounded text-xs font-semibold bg-violet-800 hover:bg-violet-700 text-white transition-colors">
+            🎲 시뮬레이션 히트맵
+          </button>
+        </div>
+        <div id="threshold-results"></div>
+
+        <!-- 몬테카를로 히트맵 패널 -->
+        <div id="monte-panel" class="hidden mt-4 pt-4 border-t border-slate-800">
+          <div class="flex items-center justify-between mb-2">
+            <div class="text-xs font-semibold text-slate-300">📊 가중치 조합 민감도 히트맵</div>
+            <div class="text-xs text-slate-600">10×10 격자 · 3개 구간 평균 위험도</div>
+          </div>
+          <!-- 컬러 범례 -->
+          <div class="flex items-center gap-3 mb-3 text-xs flex-wrap">
+            <span class="flex items-center gap-1"><span class="inline-block w-3 h-3 rounded-sm" style="background:#22c55e;"></span><span class="text-slate-400">일반관리</span></span>
+            <span class="flex items-center gap-1"><span class="inline-block w-3 h-3 rounded-sm" style="background:#eab308;"></span><span class="text-slate-400">검토예비주수</span></span>
+            <span class="flex items-center gap-1"><span class="inline-block w-3 h-3 rounded-sm" style="background:#f97316;"></span><span class="text-slate-400">우선예비주수</span></span>
+            <span class="flex items-center gap-1"><span class="inline-block w-3 h-3 rounded-sm" style="background:#ef4444;"></span><span class="text-slate-400">즉시예비주수</span></span>
+            <span class="flex items-center gap-1 ml-2"><span class="inline-block w-3 h-3 rounded-full border-2 border-white" style="background:transparent;"></span><span class="text-slate-400">현재 설정</span></span>
+          </div>
+          <!-- 히트맵 + 축 레이블 -->
+          <div class="flex gap-2 items-start">
+            <!-- Y축 레이블 -->
+            <div class="flex flex-col items-center justify-center" style="width:20px; height:280px;">
+              <span class="monte-ylabel-text">S_official →</span>
+            </div>
+            <!-- 캔버스 -->
+            <div class="relative">
+              <canvas id="monte-canvas" width="280" height="280" class="monte-canvas"></canvas>
+              <div id="monte-tooltip" class="hidden monte-tooltip"></div>
+            </div>
+          </div>
+          <!-- X축 레이블 -->
+          <div class="ml-7 mt-1 text-xs text-slate-600 text-center">← S_exposure →</div>
+          <div class="ml-7 mt-1 text-xs text-slate-500">
+            ✦ 현재: S_official <span id="monte-cur-off" class="font-mono text-slate-300"></span>
+            / S_exposure <span id="monte-cur-exp" class="font-mono text-slate-300"></span>
+          </div>
+          <div id="monte-loading" class="hidden mt-2 text-xs text-violet-400">계산 중…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 파이프라인 라이브 뷰 (4-Phase 상세 설명) ── -->
+    <div id="pipeline-liveview" class="mt-5">
+
+      <!-- 헤더 + 컨트롤 바 -->
+      <div class="flex items-center justify-between mb-4 p-4 rounded-xl border border-slate-700" style="background:#0f172a;">
+        <div>
+          <div class="text-sm font-semibold text-slate-200">🎬 파이프라인 라이브 뷰</div>
+          <div class="text-xs text-slate-500 mt-0.5">예측DB → ★DOL 추론 → LLM 변환</div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="lv-btn-run"   class="lv-btn-primary">🚀 추론 시작</button>
+          <button id="lv-btn-step"  class="lv-btn-secondary">⏭ 단계별</button>
+          <button id="lv-btn-reset" class="lv-btn-secondary">🔄 초기화</button>
+          <span id="lv-step-label" class="text-xs text-slate-600 ml-1"></span>
+        </div>
+      </div>
+
+      <!-- 4-Phase 스텝퍼 -->
+      <div class="flex items-center gap-2 mb-5">
+        <div class="lv-phase idle" id="lv-phase-trigger">
+          <div class="lv-phase-icon">🚨</div>
+          <div class="lv-phase-label">① TRIGGER</div>
+          <div class="lv-phase-status">IDLE</div>
+        </div>
+        <div class="lv-arrow" id="lv-arrow-1">→</div>
+        <div class="lv-phase idle" id="lv-phase-state">
+          <div class="lv-phase-icon">⚙️</div>
+          <div class="lv-phase-label">② STATE</div>
+          <div class="lv-phase-status">IDLE</div>
+        </div>
+        <div class="lv-arrow" id="lv-arrow-2">→</div>
+        <div class="lv-phase idle" id="lv-phase-action">
+          <div class="lv-phase-icon">🎯</div>
+          <div class="lv-phase-label">③ ACTION</div>
+          <div class="lv-phase-status">IDLE</div>
+        </div>
+        <div class="lv-arrow" id="lv-arrow-3">→</div>
+        <div class="lv-phase idle" id="lv-phase-lineage">
+          <div class="lv-phase-icon">🔍</div>
+          <div class="lv-phase-label">④ LINEAGE</div>
+          <div class="lv-phase-status">IDLE</div>
+        </div>
+      </div>
+
+      <!-- Phase 1: TRIGGER — 구역 카드 -->
+      <section id="lv-section-trigger" class="hidden mb-4 p-4 rounded-xl border border-slate-800" style="background:#0f172a;">
+        <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
+          🔥 Phase 1: TRIGGER — 고위험 구역 감지
+        </div>
+        <div id="lv-zone-cards" class="flex gap-3 mb-3"></div>
+        <div class="p-2 rounded text-xs text-slate-500 font-mono" style="background:#020617;">
+          match $a isa risk-assessment, has risk-level '높음', has risk-index-value $v; ...
+        </div>
+      </section>
+
+      <!-- Phase 2: STATE — 추론 INSERT 로그 -->
+      <section id="lv-section-state" class="hidden mb-4 p-4 rounded-xl border border-slate-800" style="background:#0f172a;">
+        <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
+          ⚙️ Phase 2: STATE — 추론 INSERT (i01~i04)
+        </div>
+        <div class="flex flex-col gap-2">
+          <div class="lv-infer-step" id="lv-infer-i01">
+            <div class="lv-infer-check">—</div>
+            <div>
+              <div class="text-sm font-semibold text-slate-300">i01 접근통제 결정</div>
+              <div class="text-xs text-slate-500 font-mono">high_risk_zones() → control-decision INSERT</div>
+            </div>
+          </div>
+          <div class="lv-infer-step" id="lv-infer-i02">
+            <div class="lv-infer-check">—</div>
+            <div>
+              <div class="text-sm font-semibold text-slate-300">i02 대피경보 결정</div>
+              <div class="text-xs text-slate-500 font-mono">watch_targets() → evacuation-decision INSERT</div>
+            </div>
+          </div>
+          <div class="lv-infer-step" id="lv-infer-i03">
+            <div class="lv-infer-check">—</div>
+            <div>
+              <div class="text-sm font-semibold text-slate-300">i03 출동 결정</div>
+              <div class="text-xs text-slate-500 font-mono">ready_crews() → dispatch-decision INSERT</div>
+            </div>
+          </div>
+          <div class="lv-infer-step" id="lv-infer-i04">
+            <div class="lv-infer-check">—</div>
+            <div>
+              <div class="text-sm font-semibold text-slate-300">i04 정책권고 생성</div>
+              <div class="text-xs text-slate-500 font-mono">incidents_with_post_report() → policy-recommendation INSERT</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Phase 3: ACTION — 결정 카드 -->
+      <section id="lv-section-action" class="hidden mb-4 p-4 rounded-xl border border-slate-800" style="background:#0f172a;">
+        <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
+          🎯 Phase 3: ACTION — 결정 결과
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="lv-decision-card" id="lv-card-access">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-xl">🚧</span>
+              <span class="text-sm font-bold text-slate-200">접근통제</span>
+              <span class="text-xs text-slate-500 ml-auto font-mono">control-decision</span>
+            </div>
+            <div id="lv-action-access" class="text-xs text-slate-400 leading-relaxed"></div>
+          </div>
+          <div class="lv-decision-card" id="lv-card-evac">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-xl">🏘️</span>
+              <span class="text-sm font-bold text-slate-200">대피경보</span>
+              <span class="text-xs text-slate-500 ml-auto font-mono">evacuation-decision</span>
+            </div>
+            <div id="lv-action-evac" class="text-xs text-slate-400 leading-relaxed"></div>
+          </div>
+          <div class="lv-decision-card" id="lv-card-dispatch">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-xl">🚒</span>
+              <span class="text-sm font-bold text-slate-200">출동 배정</span>
+              <span class="text-xs text-slate-500 ml-auto font-mono">dispatch-decision</span>
+            </div>
+            <div id="lv-action-dispatch" class="text-xs text-slate-400 leading-relaxed"></div>
+          </div>
+          <div class="lv-decision-card" id="lv-card-policy">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-xl">📋</span>
+              <span class="text-sm font-bold text-slate-200">정책권고</span>
+              <span class="text-xs text-slate-500 ml-auto font-mono">policy-recommendation</span>
+            </div>
+            <div id="lv-action-policy" class="text-xs text-slate-400 leading-relaxed"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Phase 4: LINEAGE — 역추적 노드 체인 -->
+      <section id="lv-section-lineage" class="hidden mb-4 p-4 rounded-xl border border-slate-800" style="background:#0f172a;">
+        <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
+          🔍 Phase 4: LINEAGE — "왜 이 결정인가?" 역추적
+        </div>
+        <div id="lv-lineage-chains" class="flex flex-col gap-4"></div>
+        <div class="mt-2 p-2 rounded text-xs text-slate-500 font-mono" style="background:#020617;">
+          (assessment: $a, zone: $z) isa risk-assessment-for-zone; ← 추론된 관계 (★)
+        </div>
+      </section>
+
+      <!-- 완료 배너 -->
+      <section id="lv-section-complete" class="hidden p-4 rounded-xl border border-green-500/30 text-center" style="background:rgba(22,101,52,0.07);">
+        <div class="text-2xl mb-2">✅</div>
+        <div class="font-bold text-green-400 mb-1">전체 파이프라인 완료</div>
+        <div class="text-xs text-slate-400">Trigger → State → Action → Lineage | 다음: 유O수 LLM 변환</div>
+      </section>
+
+    </div>
+
+  </div>
+
+  <!-- ── Tab 3: 데이터 아키텍처 ── -->
+  <div id="tab-panel-architecture" class="tab-panel hidden">
+
+    <!-- 3계층 데이터 아키텍처 -->
+    <section id="data-layers" class="mb-5 rounded-2xl bg-slate-900 p-5 border border-slate-800">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-sm font-semibold text-slate-300 uppercase tracking-wider">📚 3계층 데이터 아키텍처</h2>
+        <button id="btn-layer-example" class="text-xs text-slate-400 hover:text-amber-400 transition-colors">
+          예제 보기 ▾
+        </button>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="layer-card border-slate-600">
+          <div class="layer-header">
+            <span class="layer-num">L1</span>
+            <span class="layer-name">Raw Data</span>
+          </div>
+          <p class="layer-desc">외부 API 원본 응답</p>
+          <code class="layer-example hidden">{"region": "곡성군",
+ "risk_level": "매우높음",
+ "wind": 14.2}</code>
+          <div class="layer-source">📡 산림청 API · KMA · FGIS</div>
+        </div>
+        <div class="layer-card border-cyan-600/40">
+          <div class="layer-header">
+            <span class="layer-num text-cyan-400">L2</span>
+            <span class="layer-name">Backing</span>
+          </div>
+          <p class="layer-desc">정규화 + 캐싱 + 시간 정렬</p>
+          <code class="layer-example hidden">{segment_id: "SEG-JN-C",
+ risk_score: 1.00,
+ wind_norm: 0.71,
+ ts: "2025-01-21T08:00"}</code>
+          <div class="layer-source">🗃️ sqlite cache · pydantic</div>
+        </div>
+        <div class="layer-card border-amber-600/40 relative">
+          <div class="layer-header">
+            <span class="layer-num text-amber-400">L3</span>
+            <span class="layer-name">Ontology</span>
+          </div>
+          <p class="layer-desc">추론된 관계 + Lineage</p>
+          <code class="layer-example hidden">$seg has risk-score 1.00;
+$seg has fire-risk-applies-to $r;
+$seg → PriorityPreWatering</code>
+          <div class="layer-source">🧠 TypeDB · Function-based</div>
+          <span class="absolute top-3 right-3 text-xs px-2 py-1 rounded-full bg-amber-500/20 text-amber-300">★ 추론 생성</span>
+        </div>
+      </div>
+      <div class="mt-2 text-center text-xs text-slate-500">
+        같은 곡성 데이터가 위에서 아래로 흐르며 의미가 풍부해집니다
+      </div>
+    </section>
+
+    <!-- 인터랙티브 Relation 그래프 -->
+    <section id="relation-graph-section" class="mb-5 rounded-2xl bg-slate-900 p-5 border border-slate-800">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-sm font-semibold text-slate-300 uppercase tracking-wider">🕸️ 추론된 Relation 그래프</h2>
+        <div class="flex items-center gap-3">
+          <div class="flex gap-2 text-xs">
+            <span class="flex items-center gap-1"><span class="inline-block w-3 h-3 rounded-full" style="background:#6366f1;"></span><span class="text-slate-400">구간</span></span>
+            <span class="flex items-center gap-1"><span class="inline-block w-3 h-3 rounded-full" style="background:#059669;"></span><span class="text-slate-400">Feature</span></span>
+            <span class="flex items-center gap-1"><span class="inline-block w-3 h-3 rounded-full" style="background:#d97706;"></span><span class="text-slate-400">Signal</span></span>
+            <span class="flex items-center gap-1"><span class="inline-block w-3 h-3 rounded-full" style="background:#dc2626;"></span><span class="text-slate-400">State</span></span>
+          </div>
+          <span id="graph-segment-name" class="text-xs text-slate-500">← 구간 분석 탭에서 구간 선택</span>
+        </div>
+      </div>
+      <div id="relation-graph-vis" style="height:420px; background:#0f172a; border-radius:12px; border:1px solid #1e293b;"></div>
+      <p class="mt-3 text-xs text-slate-500 text-center">
+        노드를 클릭하면 값을 확인할 수 있습니다. 점선(→)은 추론 엔진이 생성한 관계입니다.
+      </p>
+      <!-- 노드 클릭 시 상세 표시 -->
+      <div id="graph-node-detail" class="hidden mt-3 p-3 rounded-lg text-xs" style="background:#1e293b;">
+        <span id="graph-node-title" class="font-semibold text-slate-200"></span>
+        <span id="graph-node-value" class="ml-3 text-sky-400 font-mono"></span>
+        <span id="graph-node-desc" class="ml-2 text-slate-400"></span>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ── Tab 4: 오늘의 브리핑 ── -->
+  <div id="tab-panel-briefing" class="tab-panel hidden">
+
+    <!-- 브리핑 패널 -->
+    <div id="briefing-panel" class="mb-5 rounded-xl border border-slate-700 p-5" style="background:#1e293b;">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2">
+          <span class="text-base">🔥</span>
+          <h2 class="text-sm font-semibold text-orange-400 uppercase tracking-wider">오늘의 예비주수 브리핑</h2>
+          <span id="briefing-provider"
+                class="text-xs px-2 py-0.5 rounded-full bg-slate-700 text-slate-400"></span>
+        </div>
+        <button id="briefing-refresh"
+                class="px-3 py-1 rounded text-xs font-medium bg-slate-700 hover:bg-slate-600 text-slate-300 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+          새로고침
+        </button>
+      </div>
+      <div id="briefing-report"
+           class="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap mb-4 min-h-8">
+        <span class="text-slate-600 italic">새로고침을 눌러 Gemini 브리핑을 생성하세요.</span>
+      </div>
+      <div id="briefing-top5" class="flex gap-2 overflow-x-auto pb-1"></div>
+    </div>
+
+    <!-- DOL 메타 뷰 -->
+    <section id="dol-meta" class="rounded-2xl p-6 border border-purple-500/30"
+             style="background: linear-gradient(135deg, #0f172a 0%, #020617 100%);">
+      <div class="text-center mb-6">
+        <p class="text-xs text-purple-300 font-mono tracking-widest">DECISION OPERATING LAYER · RUNNING OS</p>
+        <h2 class="text-2xl font-bold mt-2" style="background: linear-gradient(90deg, #d8b4fe, #fbbf24); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+          인간과 AI가 같은 운영 세계를 공유
+        </h2>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="dol-axis"><div class="dol-icon">🖥️</div><div class="dol-name">Application</div><div class="dol-desc">화면 · workflow</div><div class="dol-status">✅ Frontend</div></div>
+        <div class="dol-axis"><div class="dol-icon">⚖️</div><div class="dol-name">Decision</div><div class="dol-desc">5 Gate · 9 Override</div><div class="dol-status">✅ Reasoning</div></div>
+        <div class="dol-axis"><div class="dol-icon">🗃️</div><div class="dol-name">Data</div><div class="dol-desc">Raw → Backing → Onto</div><div class="dol-status">✅ 3-Layer</div></div>
+        <div class="dol-axis"><div class="dol-icon">🧠</div><div class="dol-name">Logic</div><div class="dol-desc">함수 추론 · 17 Feature</div><div class="dol-status">✅ TypeDB fn</div></div>
+        <div class="dol-axis"><div class="dol-icon">🎯</div><div class="dol-name">Action</div><div class="dol-desc">PreWatering 자원 배정</div><div class="dol-status">⚠️ Mock</div></div>
+        <div class="dol-axis"><div class="dol-icon">🔐</div><div class="dol-name">Security</div><div class="dol-desc">접근 권한 · 감사</div><div class="dol-status">⬜ Phase 2</div></div>
+        <div class="dol-axis"><div class="dol-icon">🔁</div><div class="dol-name">Feedback</div><div class="dol-desc">Lineage 역추적</div><div class="dol-status">✅ Audit</div></div>
+        <div class="dol-axis"><div class="dol-icon">📊</div><div class="dol-name">Operations</div><div class="dol-desc">관측 · 임계치 조정</div><div class="dol-status">⚠️ 부분</div></div>
+      </div>
+      <p class="mt-6 text-center text-sm text-slate-400">
+        하나라도 빠지면 운영 가능한 ontology가 아닙니다.<br>
+        <span class="text-purple-300">8축 동시 설계</span>가 BeAWARE를 넘어 운영 OS가 되는 조건입니다.
+      </p>
+    </section>
+
+  </div>
+
+</main>
+
+<!-- B-5: DOL 상세 오버레이 -->
+<div id="dol-overlay">
+  <div class="dol-overlay-panel">
+    <div class="dol-overlay-header">
+      <div class="flex items-start">
+        <div class="dol-overlay-icon" id="dol-ov-icon"></div>
+        <div>
+          <div class="dol-overlay-name" id="dol-ov-name"></div>
+          <div class="dol-overlay-sub" id="dol-ov-sub"></div>
+        </div>
+      </div>
+      <button class="dol-close-btn" id="dol-ov-close">✕ 닫기 (ESC)</button>
+    </div>
+    <div id="dol-ov-body"></div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<div id="toast"></div>
+
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>

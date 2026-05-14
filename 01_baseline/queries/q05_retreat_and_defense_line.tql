@@ -1,0 +1,11 @@
+match
+$incident isa fire-incident, has name $incident-name;
+$hazard isa hazard-zone, has hazard-type $hazard-type;
+(hazard: $hazard, incident: $incident) isa hazard-zone-for-incident;
+$plan isa retreat-plan, has recorded-at $plan-at;
+(plan: $plan, incident: $incident) isa retreat-plan-for-incident;
+$retreat-line isa control-line, has name $retreat-line-name;
+(plan: $plan, retreat-line: $retreat-line) isa retreat-plan-uses-retreat-line;
+$defense-line isa control-line, has name $defense-line-name;
+(plan: $plan, defense-line: $defense-line) isa retreat-plan-uses-defense-line;
+select $incident-name, $hazard-type, $plan-at, $retreat-line-name, $defense-line-name;

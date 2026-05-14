@@ -1,0 +1,45 @@
+# v01_decision_lineage.tql
+# 역할: Decision Lineage 역추적 — "왜 이 결정인가?" 출력
+# 출처: 06_decision-logic.md §Decision Gate
+# 실행: read 트랜잭션 (load_dol.py Step 5, 검증용)
+#
+# 출력 컬럼:
+#   seg-id      : 구간 ID
+#   seg-name    : 구간 이름
+#   state       : 최종 State (PriorityPreWatering 등)
+#   override    : 적용된 override ("none" = 자연 Band)
+#   s-priority  : S_priority 점수 [0,1]
+#   f-kind      : Feature 이름
+#   f-score     : Feature 점수
+#   sig-kind    : Signal 이름
+#   sig-score   : Signal 점수
+#
+# 발표 시연: 3개 구간 전체 출력 → Lineage 패널에 표시
+
+match
+  # 구간 기본 정보
+  $seg isa pre-watering-segment,
+    has segment-id $seg-id,
+    has segment-name $seg-name;
+
+  # 최종 State (i03 결과)
+  $r-dec isa segment-decision, links (subject: $seg, outcome: $ds);
+  $ds has state-band $state,
+      has s-priority $sp,
+      has override-applied $override;
+
+  # Feature Lineage (i01 결과)
+  $r-feat isa segment-feature, links (subject: $seg, result: $fr);
+  $fr has feature-kind $f-kind,
+       has feature-score $f-score;
+
+  # Signal Lineage (i02 결과)
+  $r-sig isa segment-signal, links (subject: $seg, result: $sr);
+  $sr has signal-kind $sig-kind,
+       has signal-score $sig-score;
+
+select
+  $seg-id, $seg-name,
+  $state, $override, $sp,
+  $f-kind, $f-score,
+  $sig-kind, $sig-score;

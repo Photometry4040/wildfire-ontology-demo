@@ -1,0 +1,99 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# 가상환경
+.venv/
+venv/
+env/
+
+# 환경 변수 (API 키 포함)
+.env
+*.env.local
+
+# TypeDB 데이터
+*.typedb
+typedb-data/
+
+# SQLite 캐시 (pipelines)
+*.db
+*.sqlite3
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V5
+.Trashes
+
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# 로그
+*.log
+logs/
+
+# Node.js / Frontend 빌드
+node_modules/
+04_frontend/node_modules/
+04_frontend/dist/
+04_frontend/.vite/
+package-lock.json
+
+# 원시 데이터 스냅샷 (공공데이터 다운로드본 — 재현 가능하므로 git 불필요)
+data/raw/
+
+# 발표 fallback 스크린샷 (바이너리, 대용량 가능)
+05_presentation/fallback_screenshots/
+
+# 임시·백업 파일
+*.bak
+*.tmp
+
+# 내부 개발 문서 (로컬 전용)
+PLAN.md
+pipeline_visualization_plan.md
+migrate.sh
+99_fullstack/
+MVP_PLAN.md
+CLAUDE.md
+01_baseline/CLAUDE.md
+frontend_d2_visualization_plan.md
+frontend_post_presentation_plan.Md
+
+# 발표 자료 (로컬 전용)
+05_presentation/
+catalog/
+
+# 문서 (발표·설계 산출물)
+docs/wildfire_ontology_presentation.pptx
+docs/wildfire_ontology_presentation.md
+01_baseline/ontology/
+01_baseline/queries/validation/
+01_baseline/schema/verify_commands.ps1
+01_baseline/data/source_inventory.json
+04_frontend/_legacy/
+
+# Claude Code 내부 설정
+.claude/agents/
+.claude/settings.json
+.claude/settings.local.json

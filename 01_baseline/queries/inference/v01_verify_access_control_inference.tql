@@ -1,0 +1,5 @@
+match
+  $decision isa control-decision, has action-type "출입통제-필요";
+  $zone isa forest-zone, has name $zone-name;
+  (decision: $decision, zone: $zone) isa control-decision-for-zone;
+select $zone-name;
